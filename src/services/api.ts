@@ -1,3 +1,44 @@
+// Consulta débitos na API oficial
+export const consultarDebitos = async (
+  params: {
+    SSETipoContribuinte: string;
+    SSEInscricao: string;
+    SSEExercicioDebito: string;
+    SSETipoConsumo: string;
+    SSENossoNumero?: string;
+    SSECPFCNPJ?: string;
+    SSEOperacao?: string;
+    SSEIdentificador?: string;
+  }
+): Promise<any> => {
+  const SSEChave = '@C0sS0_@P1';
+  const apiUrl = 'http://localhost:4000/api/apapidebito';
+  const payload = {
+    SSEChave,
+    SSETipoContribuinte: params.SSETipoContribuinte,
+    SSEInscricao: params.SSEInscricao,
+    SSEExercicioDebito: params.SSEExercicioDebito,
+    SSETipoConsumo: params.SSETipoConsumo,
+    SSENossoNumero: params.SSENossoNumero || '',
+    SSECPFCNPJ: params.SSECPFCNPJ || '',
+    SSEOperacao: params.SSEOperacao || '',
+    SSEIdentificador: params.SSEIdentificador || ''
+  };
+  try {
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'DadosAPI': JSON.stringify(payload)
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(`Erro na API de débitos: ${error.response.status} - ${error.response.statusText}`);
+    }
+    throw error;
+  }
+};
 import axios, { AxiosResponse } from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { Pertence, SoapResponse, DocumentRequestParams, DocumentResponse, DocumentType } from '../types';
@@ -510,13 +551,12 @@ export const emitirDocumento = async (
     logger.info(`${logPrefix} =================== FAZENDO REQUISIÇÃO ===================`);
     logger.info(`${logPrefix} URL: ${apiUrl}`);
     logger.info(`${logPrefix} Método: GET`);
-    logger.info(`${logPrefix} Headers da requisição: Content-Type: application/json, DadosAPIDocumento: <JSON>`);
+    logger.info(`${logPrefix} Header DadosAPIDocumento:`, JSON.stringify(documentParams));
     logger.info(`${logPrefix} Instância axios criada com sucesso`);
 
-    // Envia apenas os headers necessários (POST)
-    const response: AxiosResponse<DocumentResponse> = await documentApiInstance.post(apiUrl, null, {
+    // Envia os dados no header DadosAPIDocumento conforme documentação
+    const response: AxiosResponse<DocumentResponse> = await documentApiInstance.get(apiUrl, {
       headers: {
-        'Content-Type': 'application/json',
         'DadosAPIDocumento': JSON.stringify(documentParams)
       }
     });
@@ -598,5 +638,5 @@ export const DOCUMENT_TYPES = {
   BCI: '3',
   BCM: '4',
   ALVARA_FUNCIONAMENTO: '5',
-  VISA: '6'
+  //VISA: '6'
 } as const;

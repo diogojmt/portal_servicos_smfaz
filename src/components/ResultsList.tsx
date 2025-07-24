@@ -19,10 +19,15 @@ import {
   ListItemIcon,
   ListItemText,
   Snackbar,
+  Dialog,
 } from "@mui/material";
 import { Pertence, DocumentType } from "../types";
 import { LoadingSkeleton } from "./Skeleton";
-import { emitirDocumento, DOCUMENT_TYPES } from "../services/api";
+import {
+  emitirDocumento,
+  DOCUMENT_TYPES,
+  consultarDebitos,
+} from "../services/api";
 
 // Ícones simples como componentes
 const DashboardIcon = () => (
@@ -73,6 +78,30 @@ const VerifiedIcon = () => (
   <span style={{ marginRight: 8, fontSize: "1.2em" }}>✅</span>
 );
 
+// Helper para cor do Chip de situação
+const getSituacaoColor = (situacao: string) => {
+  switch (situacao) {
+    case "Ativo":
+      return {
+        backgroundColor: (theme: any) => theme.customColors.successAlpha10,
+        color: (theme: any) => theme.palette.success.main,
+        borderColor: (theme: any) => theme.customColors.successAlpha30,
+      };
+    case "Com Débito":
+      return {
+        backgroundColor: (theme: any) => theme.customColors.errorAlpha10,
+        color: (theme: any) => theme.palette.error.main,
+        borderColor: (theme: any) => theme.customColors.errorAlpha30,
+      };
+    default:
+      return {
+        backgroundColor: (theme: any) => theme.customColors.infoAlpha10,
+        color: (theme: any) => theme.palette.info.main,
+        borderColor: (theme: any) => theme.customColors.infoAlpha30,
+      };
+  }
+};
+
 interface ResultsListProps {
   pertences: Pertence[];
   loading: boolean;
@@ -101,6 +130,14 @@ const ResultsList: React.FC<ResultsListProps> = ({
     message: string;
     severity: "success" | "error" | "info";
   }>({ open: false, message: "", severity: "info" });
+
+  // Estados para modal de débitos
+  const [openDebitoModal, setOpenDebitoModal] = useState(false);
+  const [debitoLoading, setDebitoLoading] = useState(false);
+  const [debitoError, setDebitoError] = useState<string | null>(null);
+  const [debitoData, setDebitoData] = useState<any>(null);
+  const [debitoPertence, setDebitoPertence] = useState<Pertence | null>(null);
+
   const theme = useTheme();
 
   if (loading) {
@@ -149,7 +186,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
   const totalAtivo = pertences.filter((p) => p.situacao === "Ativo").length;
 
   // Tipos de documentos disponíveis
-  const documentTypes = [
+  const allDocumentTypes = [
     {
       id: DOCUMENT_TYPES.DEMONSTRATIVO,
       name: "Demonstrativo",
@@ -167,8 +204,40 @@ const ResultsList: React.FC<ResultsListProps> = ({
       name: "Alvará de Funcionamento",
       icon: <BusinessCenterIcon />,
     },
-    { id: DOCUMENT_TYPES.VISA, name: "VISA", icon: <VerifiedIcon /> },
+    //{ id: DOCUMENT_TYPES.VISA, name: "VISA", icon: <VerifiedIcon /> },
   ];
+
+  // Filtra tipos de documento baseado no tipo de contribuinte
+  const getAvailableDocumentTypes = (pertence: Pertence) => {
+    const isImovel = pertence.tipoContribuinte === "Imóvel";
+    const isEmpresa = pertence.tipoContribuinte === "Empresa";
+
+    if (isImovel) {
+      // Para imóveis, oculta BCM (4), Alvará de Funcionamento (5) e VISA (6)
+      return allDocumentTypes.filter(
+        (docType) =>
+          ![
+            DOCUMENT_TYPES.BCM,
+            DOCUMENT_TYPES.ALVARA_FUNCIONAMENTO,
+            //DOCUMENT_TYPES.VISA,
+          ].includes(docType.id as any)
+      );
+    }
+
+    if (isEmpresa) {
+      // Para empresas, oculta CERTIDAO (2), BCI (3) e VISA (6)
+      return allDocumentTypes.filter(
+        (docType) =>
+          ![
+            DOCUMENT_TYPES.CERTIDAO,
+            DOCUMENT_TYPES.BCI,
+            //DOCUMENT_TYPES.VISA,
+          ].includes(docType.id as any)
+      );
+    }
+
+    return allDocumentTypes;
+  };
 
   const handleDocumentMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -232,44 +301,519 @@ const ResultsList: React.FC<ResultsListProps> = ({
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  const handleActionClick = (action: string, pertence: Pertence) => {
-    console.log(`Ação "${action}" para pertence:`, pertence);
-    alert(`Funcionalidade "${action}" será implementada em breve!`);
+  const handleActionClick = async (action: string, pertence: Pertence) => {
+    if (action === "Ver Débitos") {
+      setDebitoPertence(pertence);
+      setDebitoLoading(true);
+      setDebitoError(null);
+      setOpenDebitoModal(true);
+      try {
+        // Parâmetros mínimos obrigatórios
+        const params = {
+          SSETipoContribuinte:
+            pertence.tipoContribuinte === "Imóvel" ? "2" : "3",
+          SSEInscricao: pertence.inscricao,
+          SSEExercicioDebito: "", // ou ano atual, se necessário
+          SSETipoConsumo: "1", // lista todos os débitos
+          SSENossoNumero: "",
+          SSECPFCNPJ: "",
+          SSEOperacao: "",
+          SSEIdentificador: "",
+        };
+        const data = await consultarDebitos(params);
+        console.log("Dados de débitos recebidos:", data);
+        console.log("Tipo dos dados:", typeof data);
+        console.log("Dados é null/undefined?", data == null);
+        setDebitoData(data);
+        console.log("Estado após setDebitoData");
+      } catch (err) {
+        console.error("Erro ao consultar débitos:", err);
+        setDebitoError(
+          err instanceof Error ? err.message : "Erro ao consultar débitos."
+        );
+        setDebitoData(null);
+      } finally {
+        console.log("Finalizando - setando loading para false");
+        setDebitoLoading(false);
+      }
+    }
   };
 
-  const getSituacaoColor = (situacao: string) => {
-    switch (situacao?.toLowerCase()) {
-      case "ativo":
-        return {
-          backgroundColor:
-            theme.customColors?.successAlpha20 ||
-            alpha(theme.palette.success.main, 0.2),
-          color: theme.palette.success.main,
-          borderColor:
-            theme.customColors?.successAlpha30 ||
-            alpha(theme.palette.success.main, 0.3),
-        };
-      case "com débito":
-        return {
-          backgroundColor:
-            theme.customColors?.errorAlpha20 ||
-            alpha(theme.palette.error.main, 0.2),
-          color: theme.palette.error.main,
-          borderColor:
-            theme.customColors?.errorAlpha30 ||
-            alpha(theme.palette.error.main, 0.3),
-        };
-      default:
-        return {
-          backgroundColor:
-            theme.customColors?.warningAlpha20 ||
-            alpha(theme.palette.warning.main, 0.2),
-          color: theme.palette.warning.main,
-          borderColor:
-            theme.customColors?.warningAlpha30 ||
-            alpha(theme.palette.warning.main, 0.3),
-        };
-    }
+  // Modal de Débitos fora do componente principal para evitar hooks condicionais
+  const DebitoModal: React.FC<{
+    open: boolean;
+    onClose: () => void;
+    loading: boolean;
+    error: string | null;
+    data: any;
+  }> = ({ open, onClose, loading, error, data }) => {
+    console.log("DebitoModal render:", {
+      open,
+      loading,
+      error,
+      hasData: !!data,
+      data: data,
+    });
+    return (
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            minHeight: 300,
+            maxHeight: "80vh",
+            bgcolor: "background.paper",
+            borderRadius: (theme: any) => theme.designTokens.borderRadius.lg,
+            boxShadow: (theme: any) => theme.designTokens.shadows.light.lg,
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
+        {/* Cabeçalho fixo */}
+        <Box
+          sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: 2,
+            bgcolor: "background.paper",
+            p: 3,
+            borderBottom: (theme: any) =>
+              `1px solid ${theme.customColors.border.light}`,
+          }}
+        >
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              color: "primary.main",
+              fontWeight: 600,
+              mb: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            💰 Débitos do Vínculo
+          </Typography>
+        </Box>
+
+        {/* Conteúdo scrollável */}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            px: 3,
+            py: 2,
+            bgcolor: "background.paper",
+            color: "text.primary",
+            minHeight: 250,
+          }}
+        >
+          {loading && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                py: 4,
+                px: 3,
+                bgcolor: (theme: any) => theme.customColors.primaryAlpha10,
+                borderRadius: (theme: any) =>
+                  theme.designTokens.borderRadius.md,
+                border: (theme: any) =>
+                  `1px solid ${theme.customColors.border.light}`,
+              }}
+            >
+              <CircularProgress size={24} color="primary" />
+              <Typography sx={{ color: "primary.main", fontWeight: 500 }}>
+                Consultando débitos...
+              </Typography>
+            </Box>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          {!loading && !error && !data && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Nenhum dados de débito encontrado.
+            </Alert>
+          )}
+
+          {data && data.SDTSaidaAPIDebito && (
+            <Box sx={{ mt: 2 }}>
+              {/* Cabeçalho com informações do contribuinte */}
+              <Card
+                sx={{
+                  mb: 3,
+                  bgcolor: (theme: any) => theme.customColors.surface.warm,
+                  border: (theme: any) =>
+                    `1px solid ${theme.customColors.border.light}`,
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "text.primary",
+                      mb: 2,
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    📄 Informações do Contribuinte
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(200px, 1fr))",
+                      gap: 2,
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
+                      >
+                        Contribuinte:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.primary" }}
+                      >
+                        {data.SSANomeRazao}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
+                      >
+                        CPF/CNPJ:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.primary" }}
+                      >
+                        {data.SSACPFCNPJ}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
+                      >
+                        Inscrição:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.primary" }}
+                      >
+                        {data.SSAInscricao}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
+                      >
+                        Total de Débitos:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "error.main", fontWeight: 600 }}
+                      >
+                        {data.SDTSaidaAPIDebito?.length || 0} pendências
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+
+              {/* Resumo financeiro */}
+              <Card
+                sx={{
+                  mb: 3,
+                  bgcolor: (theme: any) => theme.customColors.warningAlpha10,
+                  border: (theme: any) =>
+                    `1px solid ${theme.customColors.warningAlpha30}`,
+                }}
+              >
+                <CardContent sx={{ p: 2 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      color: "warning.dark",
+                      mb: 1,
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    💰 Resumo Financeiro
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(150px, 1fr))",
+                      gap: 2,
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "warning.dark" }}
+                      >
+                        Valor Total:
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: "warning.dark", fontWeight: 600 }}
+                      >
+                        R${" "}
+                        {data.SDTSaidaAPIDebito?.reduce(
+                          (sum: number, item: any) =>
+                            sum + (item.SSAValorTotal || 0),
+                          0
+                        ).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "warning.dark" }}
+                      >
+                        Valor Original:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "warning.dark" }}
+                      >
+                        R${" "}
+                        {data.SDTSaidaAPIDebito?.reduce(
+                          (sum: number, item: any) =>
+                            sum + (item.SSAValorOriginal || 0),
+                          0
+                        ).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "warning.dark" }}
+                      >
+                        Juros + Multa:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "warning.dark" }}
+                      >
+                        R${" "}
+                        {data.SDTSaidaAPIDebito?.reduce(
+                          (sum: number, item: any) =>
+                            sum +
+                            (item.SSAValorJuros || 0) +
+                            (item.SSAValorMulta || 0),
+                          0
+                        ).toFixed(2)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+
+              {/* Lista de débitos */}
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "text.primary",
+                  mb: 2,
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                📋 Débitos Detalhados
+              </Typography>
+
+              <Box
+                sx={{
+                  maxHeight: 400,
+                  overflow: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: 6,
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: (theme: any) =>
+                      theme.customColors.border.strong,
+                    borderRadius: 3,
+                  },
+                }}
+              >
+                {data.SDTSaidaAPIDebito.map((debito: any, index: number) => (
+                  <Card
+                    key={debito.SSANossoNumero || index}
+                    sx={{
+                      mb: 2,
+                      bgcolor: (theme: any) =>
+                        theme.customColors.surface.primary,
+                      border: (theme: any) =>
+                        `1px solid ${theme.customColors.border.light}`,
+                      transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+                      "&:hover": {
+                        bgcolor: (theme: any) =>
+                          theme.customColors.surface.secondary,
+                        borderColor: (theme: any) =>
+                          theme.customColors.border.medium,
+                        transform: "translateY(-1px)",
+                        boxShadow: (theme: any) =>
+                          theme.designTokens.shadows.light.md,
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 2 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          mb: 2,
+                        }}
+                      >
+                        <Box sx={{ flex: 1 }}>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              color: "text.primary",
+                              fontWeight: 600,
+                              mb: 1,
+                            }}
+                          >
+                            {debito.SSATributo?.split("|")[0]?.trim() ||
+                              "Tributo não identificado"}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary", display: "block" }}
+                          >
+                            Referência: {debito.SSAReferencia} | Exercício:{" "}
+                            {debito.SSAExercicio || new Date().getFullYear()}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary", display: "block" }}
+                          >
+                            Vencimento:{" "}
+                            {new Date(debito.SSAVencimento).toLocaleDateString(
+                              "pt-BR"
+                            )}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: "right", minWidth: 120 }}>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: "error.main", fontWeight: 600 }}
+                          >
+                            R$ {debito.SSAValorTotal?.toFixed(2)}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Original: R$ {debito.SSAValorOriginal?.toFixed(2)}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="success"
+                          onClick={() =>
+                            window.open(debito.SSALinkDAM, "_blank")
+                          }
+                          sx={{ fontSize: "0.75rem" }}
+                        >
+                          📄 Baixar Guia
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() =>
+                            navigator.clipboard.writeText(
+                              debito.SSALinhaDigitavel
+                            )
+                          }
+                          sx={{ fontSize: "0.75rem" }}
+                        >
+                          📋 Copiar Linha Digitável
+                        </Button>
+                        <Button
+                          variant="text"
+                          size="small"
+                          color="info"
+                          onClick={() => {
+                            setSnackbar({
+                              open: true,
+                              message: `Nosso Número: ${debito.SSANossoNumero}`,
+                              severity: "info",
+                            });
+                          }}
+                          sx={{ fontSize: "0.75rem" }}
+                        >
+                          ℹ️ Ver Detalhes
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+          )}
+        </Box>
+
+        {/* Rodapé fixo */}
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            zIndex: 2,
+            bgcolor: "background.paper",
+            mt: 0,
+            px: 3,
+            py: 2,
+            borderTop: (theme: any) =>
+              `1px solid ${theme.customColors.border.light}`,
+            display: "flex",
+            gap: 2,
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            onClick={onClose}
+            variant="contained"
+            size="large"
+            color="primary"
+          >
+            Fechar
+          </Button>
+        </Box>
+      </Dialog>
+    );
   };
 
   const renderPertenceCard = (pertence: Pertence, index: number) => (
@@ -662,6 +1206,15 @@ const ResultsList: React.FC<ResultsListProps> = ({
 
   return (
     <Box sx={{ mt: 4 }}>
+      {/* Modal de Débitos sempre renderizado */}
+      <DebitoModal
+        open={openDebitoModal}
+        onClose={() => setOpenDebitoModal(false)}
+        loading={debitoLoading}
+        error={debitoError}
+        data={debitoData}
+      />
+
       {/* Header dos resultados */}
       <Card
         elevation={0}
@@ -760,26 +1313,27 @@ const ResultsList: React.FC<ResultsListProps> = ({
           },
         }}
       >
-        {documentTypes.map((docType) => (
-          <MenuItem
-            key={docType.id}
-            onClick={() => handleEmitirDocumento(docType.id as DocumentType)}
-            disabled={
-              loadingDocument ===
-              `${documentMenu.pertence?.inscricao}-${docType.id}`
-            }
-          >
-            <ListItemIcon>
-              {loadingDocument ===
-              `${documentMenu.pertence?.inscricao}-${docType.id}` ? (
-                <CircularProgress size={20} />
-              ) : (
-                docType.icon
-              )}
-            </ListItemIcon>
-            <ListItemText primary={docType.name} />
-          </MenuItem>
-        ))}
+        {documentMenu.pertence &&
+          getAvailableDocumentTypes(documentMenu.pertence).map((docType) => (
+            <MenuItem
+              key={docType.id}
+              onClick={() => handleEmitirDocumento(docType.id as DocumentType)}
+              disabled={
+                loadingDocument ===
+                `${documentMenu.pertence?.inscricao}-${docType.id}`
+              }
+            >
+              <ListItemIcon>
+                {loadingDocument ===
+                `${documentMenu.pertence?.inscricao}-${docType.id}` ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  docType.icon
+                )}
+              </ListItemIcon>
+              <ListItemText primary={docType.name} />
+            </MenuItem>
+          ))}
       </Menu>
 
       {/* Snackbar para feedback */}

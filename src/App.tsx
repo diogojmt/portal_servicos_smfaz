@@ -83,13 +83,23 @@ const App: React.FC = () => {
               lineHeight: 1.6,
             }}
           >
-            Digite seu CPF ou CNPJ para consultar seus vínculos com o município
-            de Arapiraca
+            Digite seu CPF ou CNPJ para consultar seus vínculos
           </Typography>
+          {/* Formulário de busca centralizado */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 4,
+              mt: 4,
+              px: { xs: 2, sm: 0 },
+            }}
+          >
+            <Box sx={{ width: "100%", maxWidth: 500 }}>
+              <CPFForm onSearch={handleSearch} loading={loading} />
+            </Box>
+          </Box>
         </Box>
-
-        {/* Formulário de busca */}
-        <CPFForm onSearch={handleSearch} loading={loading} />
 
         {/* Mensagem de erro */}
         {error && (

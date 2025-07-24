@@ -89,19 +89,6 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
             sx={{ display: "flex", flexDirection: "column", gap: 3 }}
           >
             <Box>
-              <Typography
-                variant="h6"
-                component="label"
-                htmlFor="cpfCnpj"
-                sx={{
-                  display: "block",
-                  mb: 1,
-                  fontWeight: 600,
-                  color: "text.primary",
-                }}
-              >
-                CPF/CNPJ
-              </Typography>
               <TextField
                 id="cpfCnpj"
                 value={cpfCnpj}
