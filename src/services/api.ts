@@ -513,8 +513,8 @@ export const emitirDocumento = async (
     logger.info(`${logPrefix} Headers da requisição: Content-Type: application/json, DadosAPIDocumento: <JSON>`);
     logger.info(`${logPrefix} Instância axios criada com sucesso`);
 
-    // Envia apenas os headers necessários
-    const response: AxiosResponse<DocumentResponse> = await documentApiInstance.get(apiUrl, {
+    // Envia apenas os headers necessários (POST)
+    const response: AxiosResponse<DocumentResponse> = await documentApiInstance.post(apiUrl, null, {
       headers: {
         'Content-Type': 'application/json',
         'DadosAPIDocumento': JSON.stringify(documentParams)
