@@ -1,3 +1,13 @@
+/**
+ * App principal do Portal de Serviços da Prefeitura de Arapiraca.
+ *
+ * Permite ao cidadão consultar seus vínculos (pertences) com o município de Arapiraca
+ * informando CPF ou CNPJ. O App faz a busca dos dados em serviços externos da prefeitura,
+ * exibe mensagens de erro amigáveis e apresenta os resultados de forma clara e responsiva.
+ *
+ * Utiliza Material UI para layout moderno, componentes reutilizáveis e integração com API via proxy,
+ * garantindo acessibilidade e experiência de uso tanto em desktop quanto em dispositivos móveis.
+ */
 import React, { useState } from "react";
 import { Box, Typography, Container, Alert, useTheme } from "@mui/material";
 import Layout from "./components/Layout";
