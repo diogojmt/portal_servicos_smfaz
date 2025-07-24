@@ -1,84 +1,36 @@
+import type { Pertence } from "../types";
+import { DOCUMENT_TYPES } from "../services/api";
+import { consultarDebitos, emitirDocumento } from "../services/api";
+import LoadingSkeleton from "./Skeleton";
 import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Chip,
-  Tab,
-  Tabs,
-  Alert,
-  IconButton,
-  Divider,
-  useTheme,
-  alpha,
-  CircularProgress,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Snackbar,
-  Dialog,
-} from "@mui/material";
-import { Pertence, DocumentType } from "../types";
-import { LoadingSkeleton } from "./Skeleton";
-import {
-  emitirDocumento,
-  DOCUMENT_TYPES,
-  consultarDebitos,
-} from "../services/api";
-
-// Ícones simples como componentes
-const DashboardIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📊</span>
-);
-
-const BusinessIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>🏢</span>
-);
-
-const HomeIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>🏠</span>
-);
-
-const ListIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📋</span>
-);
-
-const GetAppIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📄</span>
-);
-
-const VisibilityIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>👁️</span>
-);
-
-const DownloadIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📥</span>
-);
-
-const ArticleIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📄</span>
-);
-
-const CertificateIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>🏆</span>
-);
-
-const AssignmentIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>📋</span>
-);
-
-const BusinessCenterIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>💼</span>
-);
-
-const VerifiedIcon = () => (
-  <span style={{ marginRight: 8, fontSize: "1.2em" }}>✅</span>
-);
-
-// Helper para cor do Chip de situação
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Dialog from "@mui/material/Dialog";
+import { alpha, useTheme } from "@mui/material/styles";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DownloadIcon from "@mui/icons-material/Download";
+import BusinessIcon from "@mui/icons-material/Business";
+import HomeIcon from "@mui/icons-material/Home";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import ListIcon from "@mui/icons-material/List";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ArticleIcon from "@mui/icons-material/Article";
+import CertificateIcon from "@mui/icons-material/VerifiedUser";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+// ...existing code...
 const getSituacaoColor = (situacao: string) => {
   switch (situacao) {
     case "Ativo":
@@ -120,6 +72,9 @@ const ResultsList: React.FC<ResultsListProps> = ({
   cpfCnpj,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [filterTodos, setFilterTodos] = useState<
+    "all" | "semDebito" | "comDebito"
+  >("all");
   const [documentMenu, setDocumentMenu] = useState<{
     anchorEl: HTMLElement | null;
     pertence: Pertence | null;
@@ -141,7 +96,9 @@ const ResultsList: React.FC<ResultsListProps> = ({
   const theme = useTheme();
 
   if (loading) {
-    return <LoadingSkeleton count={3} />;
+    // LoadingSkeleton não aceita prop 'count', apenas 'variant', 'width', 'height', etc.
+    // Se quiser múltiplos esqueletos, renderize múltiplos componentes ou ajuste conforme necessário.
+    return <LoadingSkeleton />;
   }
 
   if (!cpfCnpj) {
@@ -161,25 +118,36 @@ const ResultsList: React.FC<ResultsListProps> = ({
     return doc;
   };
 
-  // Organizar pertences por tipo
-  const pertencesByType: PertencesByType = pertences.reduce(
-    (acc, pertence) => {
-      if (
-        pertence.tipoContribuinte === "Empresa" ||
-        pertence.tipoContribuinte === "Autônomo"
-      ) {
-        acc.empresa.push(pertence);
-      } else if (pertence.tipoContribuinte === "Imóvel") {
-        acc.imoveis.push(pertence);
-      } else {
-        acc.outros.push(pertence);
+  // Organizar pertences por tipo, incluindo Contribuinte Geral para a nova aba
+  const pertencesByType: PertencesByType & { geral: Pertence[] } =
+    pertences.reduce(
+      (acc, pertence) => {
+        if (
+          pertence.tipoContribuinte === "Empresa" ||
+          pertence.tipoContribuinte === "Autônomo"
+        ) {
+          acc.empresa.push(pertence);
+        } else if (pertence.tipoContribuinte === "Imóvel") {
+          acc.imoveis.push(pertence);
+        } else if (pertence.tipoContribuinte === "Contribuinte Geral") {
+          acc.geral.push(pertence);
+        } else {
+          acc.outros.push(pertence);
+        }
+        return acc;
+      },
+      { empresa: [], imoveis: [], outros: [], geral: [] } as PertencesByType & {
+        geral: Pertence[];
       }
-      return acc;
-    },
-    { empresa: [], imoveis: [], outros: [] } as PertencesByType
-  );
+    );
 
-  const contribuinte = pertences[0]?.nomeRazaoSocial || "N/A";
+  // Encontrar o Contribuinte Geral (primeiro, se houver)
+  const contribuinteGeral = pertencesByType.geral[0];
+
+  const contribuinte =
+    contribuinteGeral?.nomeRazaoSocial ||
+    pertences[0]?.nomeRazaoSocial ||
+    "N/A";
   const totalComDebito = pertences.filter(
     (p) => p.situacao === "Com Débito"
   ).length;
@@ -250,7 +218,9 @@ const ResultsList: React.FC<ResultsListProps> = ({
     setDocumentMenu({ anchorEl: null, pertence: null });
   };
 
-  const handleEmitirDocumento = async (tipoDocumento: DocumentType) => {
+  const handleEmitirDocumento = async (
+    tipoDocumento: import("../types").DocumentType
+  ) => {
     if (!documentMenu.pertence) return;
 
     const pertence = documentMenu.pertence;
@@ -309,9 +279,14 @@ const ResultsList: React.FC<ResultsListProps> = ({
       setOpenDebitoModal(true);
       try {
         // Parâmetros mínimos obrigatórios
+        let tipoContribuinte = "3";
+        if (pertence.tipoContribuinte === "Imóvel") {
+          tipoContribuinte = "2";
+        } else if (pertence.tipoContribuinte === "Contribuinte Geral") {
+          tipoContribuinte = "1";
+        }
         const params = {
-          SSETipoContribuinte:
-            pertence.tipoContribuinte === "Imóvel" ? "2" : "3",
+          SSETipoContribuinte: tipoContribuinte,
           SSEInscricao: pertence.inscricao,
           SSEExercicioDebito: "", // ou ano atual, se necessário
           SSETipoConsumo: "1", // lista todos os débitos
@@ -875,57 +850,130 @@ const ResultsList: React.FC<ResultsListProps> = ({
           />
         </Box>
 
-        {/* Detalhes */}
-        <Box sx={{ mb: 3 }}>
-          {pertence.endereco && (
-            <Box sx={{ mb: 2 }}>
-              <Typography
-                variant="body2"
-                fontWeight={600}
-                color="text.primary"
-                gutterBottom
-              >
-                Endereço:
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {pertence.endereco}
-              </Typography>
-            </Box>
-          )}
-          {pertence.complemento && (
-            <Box>
-              <Typography
-                variant="body2"
-                fontWeight={600}
-                color="text.primary"
-                gutterBottom
-              >
-                Detalhes:
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {pertence.complemento}
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        {/* Detalhes adicionais para Contribuinte Geral */}
+        {pertence.tipoContribuinte === "Contribuinte Geral" && (
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              Nome/Razão Social:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.nomeRazaoSocial || "-"}
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              CPF/CNPJ:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.cpfCnpj || "-"}
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              Código do Contribuinte:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.codigoContribuinte || "-"}
+            </Typography>
+          </Box>
+        )}
 
+        {/* Detalhes adicionais para Empresa/Autônomo (sem duplicidade) */}
+        {(pertence.tipoContribuinte === "Empresa" ||
+          pertence.tipoContribuinte === "Autônomo") && (
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              Nome/Razão Social:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.nomeRazaoSocial || "-"}
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              Endereço:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.endereco || "-"}
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+              gutterBottom
+            >
+              Débito Suspenso:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {pertence.complemento === "S"
+                ? "Sim"
+                : pertence.complemento === "N"
+                ? "Não"
+                : pertence.complemento || "-"}
+            </Typography>
+          </Box>
+        )}
+        {/* Detalhes padrão (removido endereço para Empresa/Autônomo para evitar duplicidade) */}
+        {!(
+          pertence.tipoContribuinte === "Empresa" ||
+          pertence.tipoContribuinte === "Autônomo"
+        ) && (
+          <Box sx={{ mb: 3 }}>
+            {pertence.endereco && (
+              <Box sx={{ mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  color="text.primary"
+                  gutterBottom
+                >
+                  Endereço:
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {pertence.endereco}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        )}
         {/* Ações */}
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<VisibilityIcon />}
-            onClick={() => handleActionClick("Ver Débitos", pertence)}
-            sx={{
-              textTransform: "none",
-              borderColor: theme.customColors?.border?.medium,
-              "&:hover": {
-                backgroundColor: theme.customColors?.surface?.secondary,
-              },
-            }}
-          >
-            Ver Débitos
-          </Button>
+          {pertence.situacao === "Com Débito" && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleActionClick("Ver Débitos", pertence)}
+              sx={{
+                textTransform: "none",
+                borderColor: theme.customColors?.border?.medium,
+                "&:hover": {
+                  backgroundColor: theme.customColors?.surface?.secondary,
+                },
+              }}
+            >
+              Ver Débitos
+            </Button>
+          )}
           <Button
             variant="outlined"
             size="small"
@@ -955,6 +1003,35 @@ const ResultsList: React.FC<ResultsListProps> = ({
     </Card>
   );
 
+  // Função para filtrar e exibir pertences conforme o card clicado
+  const handleResumoCardClick = (type: string) => {
+    switch (type) {
+      case "total":
+        setActiveTab(4);
+        setFilterTodos("all");
+        break;
+      case "empresa":
+        setActiveTab(1);
+        break;
+      case "imovel":
+        setActiveTab(2);
+        break;
+      case "semDebito":
+        setActiveTab(4);
+        setFilterTodos("semDebito");
+        break;
+      case "comDebito":
+        setActiveTab(4);
+        setFilterTodos("comDebito");
+        break;
+      case "geral":
+        setActiveTab(3);
+        break;
+      default:
+        setActiveTab(0);
+    }
+  };
+
   const renderResumo = () => (
     <Box>
       {/* Cards de estatísticas */}
@@ -978,9 +1055,13 @@ const ResultsList: React.FC<ResultsListProps> = ({
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
-              md: "1 1 calc(20% - 12px)",
+              md: "1 1 calc(16% - 12px)",
             },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
           }}
+          onClick={() => handleResumoCardClick("total")}
         >
           <Typography variant="h4" color="primary.main" fontWeight={700}>
             {pertences.length}
@@ -1000,9 +1081,13 @@ const ResultsList: React.FC<ResultsListProps> = ({
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
-              md: "1 1 calc(20% - 12px)",
+              md: "1 1 calc(16% - 12px)",
             },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
           }}
+          onClick={() => handleResumoCardClick("empresa")}
         >
           <Typography variant="h4" color="primary.main" fontWeight={700}>
             {pertencesByType.empresa.length}
@@ -1022,9 +1107,13 @@ const ResultsList: React.FC<ResultsListProps> = ({
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
-              md: "1 1 calc(20% - 12px)",
+              md: "1 1 calc(16% - 12px)",
             },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
           }}
+          onClick={() => handleResumoCardClick("imovel")}
         >
           <Typography variant="h4" color="primary.main" fontWeight={700}>
             {pertencesByType.imoveis.length}
@@ -1038,15 +1127,45 @@ const ResultsList: React.FC<ResultsListProps> = ({
           sx={{
             textAlign: "center",
             p: 2,
+            border: `1px solid ${theme.customColors?.border?.light}`,
+            background: theme.customColors?.surface?.warm,
+            minWidth: { xs: "150px", sm: "180px" },
+            flex: {
+              xs: "1 1 100%",
+              sm: "1 1 calc(50% - 12px)",
+              md: "1 1 calc(16% - 12px)",
+            },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
+          }}
+          onClick={() => handleResumoCardClick("geral")}
+        >
+          <Typography variant="h4" color="primary.main" fontWeight={700}>
+            {pertencesByType.geral.length}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Contribuinte Geral
+          </Typography>
+        </Card>
+        <Card
+          elevation={0}
+          sx={{
+            textAlign: "center",
+            p: 2,
             border: `1px solid ${theme.customColors?.successAlpha30}`,
             background: theme.customColors?.successAlpha10,
             minWidth: { xs: "150px", sm: "180px" },
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
-              md: "1 1 calc(20% - 12px)",
+              md: "1 1 calc(16% - 12px)",
             },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
           }}
+          onClick={() => handleResumoCardClick("semDebito")}
         >
           <Typography variant="h4" color="success.main" fontWeight={700}>
             {totalAtivo}
@@ -1066,9 +1185,13 @@ const ResultsList: React.FC<ResultsListProps> = ({
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
-              md: "1 1 calc(20% - 12px)",
+              md: "1 1 calc(16% - 12px)",
             },
+            cursor: "pointer",
+            transition: "box-shadow 0.2s",
+            "&:hover": { boxShadow: theme.shadows[4] },
           }}
+          onClick={() => handleResumoCardClick("comDebito")}
         >
           <Typography variant="h4" color="error.main" fontWeight={700}>
             {totalComDebito}
@@ -1124,13 +1247,11 @@ const ResultsList: React.FC<ResultsListProps> = ({
               Ver Imóveis ({pertencesByType.imoveis.length})
             </Button>
             <Button
-              variant="outlined"
-              onClick={() =>
-                handleActionClick("Exportar Relatório", pertences[0])
-              }
+              variant="contained"
+              onClick={() => setActiveTab(3)}
               sx={{ textTransform: "none" }}
             >
-              Exportar Relatório Completo
+              Ver Contribuinte Geral ({pertencesByType.geral.length})
             </Button>
           </Box>
         </CardContent>
@@ -1138,6 +1259,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
     </Box>
   );
 
+  // Adiciona novas abas para Sem Débito e Com Débito
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -1194,11 +1316,52 @@ const ResultsList: React.FC<ResultsListProps> = ({
               gutterBottom
               sx={{ fontWeight: 600, mb: 3 }}
             >
-              Todos os Pertences
+              Contribuinte Geral
             </Typography>
-            {pertences.map(renderPertenceCard)}
+            {pertencesByType.geral.length > 0 ? (
+              pertencesByType.geral.map(renderPertenceCard)
+            ) : (
+              <Alert
+                severity="info"
+                sx={{ backgroundColor: theme.customColors?.infoAlpha10 }}
+              >
+                Nenhum Contribuinte Geral encontrado.
+              </Alert>
+            )}
           </Box>
         );
+      case 4: {
+        let lista = pertences;
+        let titulo = "Todos os Pertences";
+        if (filterTodos === "semDebito") {
+          lista = pertences.filter((p) => p.situacao === "Ativo");
+          titulo = "Pertences Sem Débito";
+        } else if (filterTodos === "comDebito") {
+          lista = pertences.filter((p) => p.situacao === "Com Débito");
+          titulo = "Pertences Com Débito";
+        }
+        return (
+          <Box>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontWeight: 600, mb: 3 }}
+            >
+              {titulo}
+            </Typography>
+            {lista.length > 0 ? (
+              lista.map(renderPertenceCard)
+            ) : (
+              <Alert
+                severity="info"
+                sx={{ backgroundColor: theme.customColors?.infoAlpha10 }}
+              >
+                Nenhum pertence encontrado.
+              </Alert>
+            )}
+          </Box>
+        );
+      }
       default:
         return renderResumo();
     }
@@ -1244,9 +1407,12 @@ const ResultsList: React.FC<ResultsListProps> = ({
         </CardContent>
       </Card>
 
+      {/* Removido o card exclusivo para Contribuinte Geral. Agora exibido em aba própria. */}
+
       {pertences.length > 0 ? (
         <Box>
           {/* Navegação por abas */}
+
           <Card
             elevation={0}
             sx={{
@@ -1256,7 +1422,10 @@ const ResultsList: React.FC<ResultsListProps> = ({
           >
             <Tabs
               value={activeTab}
-              onChange={(_, newValue) => setActiveTab(newValue)}
+              onChange={(_, newValue) => {
+                setActiveTab(newValue);
+                if (newValue === 4) setFilterTodos("all");
+              }}
               variant="scrollable"
               scrollButtons="auto"
               sx={{
@@ -1276,6 +1445,10 @@ const ResultsList: React.FC<ResultsListProps> = ({
               <Tab
                 icon={<HomeIcon />}
                 label={`Imóveis (${pertencesByType.imoveis.length})`}
+              />
+              <Tab
+                icon={<BusinessCenterIcon />}
+                label={`Contribuinte Geral (${pertencesByType.geral.length})`}
               />
               <Tab icon={<ListIcon />} label={`Todos (${pertences.length})`} />
             </Tabs>
@@ -1317,7 +1490,12 @@ const ResultsList: React.FC<ResultsListProps> = ({
           getAvailableDocumentTypes(documentMenu.pertence).map((docType) => (
             <MenuItem
               key={docType.id}
-              onClick={() => handleEmitirDocumento(docType.id as DocumentType)}
+              // Corrigir cast para DocumentType se necessário
+              onClick={() =>
+                handleEmitirDocumento(
+                  docType.id as import("../types").DocumentType
+                )
+              }
               disabled={
                 loadingDocument ===
                 `${documentMenu.pertence?.inscricao}-${docType.id}`

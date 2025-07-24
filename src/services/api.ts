@@ -81,17 +81,7 @@ axiosInstance.interceptors.response.use(
 export const fetchPertences = async (cpfCnpj: string): Promise<Pertence[]> => {
   const timestamp = new Date().toISOString();
   const logPrefix = `[SOAP-${timestamp}]`;
-  
-  // Verifica cache primeiro se habilitado
-  const cacheKey = `pertences_${cpfCnpj}`;
-  if (cache.isEnabled()) {
-    const cachedData = cache.get<Pertence[]>(cacheKey);
-    if (cachedData) {
-      logger.info(`${logPrefix} Dados obtidos do cache:`, cacheKey);
-      return cachedData;
-    }
-  }
-
+  const cacheKey = `pertences-${cpfCnpj}`;
   const soapRequest = `
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:eag="eAgata_Arapiraca_Maceio_Ev3">
       <soapenv:Header/>
@@ -315,7 +305,7 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
   try {
     logger.info(`${logPrefix} =================== ANÁLISE DETALHADA DOS DADOS ===================`);
     logger.debug(`${logPrefix} Dados recebidos para parse:`, JSON.stringify(data, null, 2));
-    
+
     if (!data) {
       logger.warn(`${logPrefix} Dados de resultado vazios`);
       return [];
@@ -323,7 +313,7 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
 
     // A estrutura real é: data -> Sdtretornopertences -> SDTRetornoPertences.SDTRetornoPertencesItem
     let pertencesData = data;
-    
+
     // Se data tem a propriedade Sdtretornopertences
     if (data.Sdtretornopertences) {
       logger.info(`${logPrefix} Encontrado Sdtretornopertences`);
@@ -332,48 +322,62 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
     } else {
       logger.info(`${logPrefix} Sdtretornopertences não encontrado, usando data diretamente`);
     }
-    
+
     // Busca pelo item principal
     const pertencesItem = pertencesData['SDTRetornoPertences.SDTRetornoPertencesItem'];
-    
+
     if (!pertencesItem) {
       logger.warn(`${logPrefix} =================== ITEM DE PERTENCES NÃO ENCONTRADO ===================`);
       logger.warn(`${logPrefix} Estrutura disponível:`, JSON.stringify(pertencesData, null, 2));
       logger.warn(`${logPrefix} Chaves disponíveis:`, Object.keys(pertencesData));
       return [];
     }
-    
+
     logger.info(`${logPrefix} =================== ITEM DE PERTENCES ENCONTRADO ===================`);
     logger.debug(`${logPrefix} Item completo:`, JSON.stringify(pertencesItem, null, 2));
-    
+
     // Verificar se há erro (CPF/CNPJ inválido)
     if (pertencesItem.SRPCPFCNPJInvalido === 'S') {
       logger.error(`${logPrefix} CPF/CNPJ marcado como inválido pelo servidor`);
       throw new Error('CPF/CNPJ inválido');
     }
-    
+
     logger.info(`${logPrefix} =================== DADOS DO CONTRIBUINTE ===================`);
     logger.info(`${logPrefix} Nome: ${pertencesItem.SRPNomeContribuinte || 'N/A'}`);
     logger.info(`${logPrefix} CPF/CNPJ: ${pertencesItem.SRPCPFCNPJContribuinte || 'N/A'}`);
     logger.info(`${logPrefix} Código: ${pertencesItem.SRPCodigoContribuinte || 'N/A'}`);
     logger.info(`${logPrefix} CPF/CNPJ Inválido: ${pertencesItem.SRPCPFCNPJInvalido || 'N/A'}`);
-    
+
     const pertences: Pertence[] = [];
-    
+
+    // Sempre adiciona o Contribuinte Geral, agora com cpfCnpj e codigoContribuinte
+    pertences.push({
+      inscricao: pertencesItem.SRPCodigoContribuinte || '',
+      nomeRazaoSocial: pertencesItem.SRPNomeContribuinte || '',
+      tipoContribuinte: 'Contribuinte Geral',
+      situacao: 'Ativo',
+      endereco: '',
+      bairro: '',
+      numero: '',
+      complemento: `CPF/CNPJ: ${pertencesItem.SRPCPFCNPJContribuinte || ''}`,
+      cpfCnpj: pertencesItem.SRPCPFCNPJContribuinte || '',
+      codigoContribuinte: pertencesItem.SRPCodigoContribuinte || '',
+    });
+
     // Processar dados da empresa se existirem
     const empresa = pertencesItem.SDTRetornoPertencesEmpresa;
     if (empresa && empresa.SDTRetornoPertencesEmpresaItem) {
       logger.info(`${logPrefix} =================== PROCESSANDO DADOS DA EMPRESA ===================`);
-      
-      const empresaItem = Array.isArray(empresa.SDTRetornoPertencesEmpresaItem) 
-        ? empresa.SDTRetornoPertencesEmpresaItem[0] 
+
+      const empresaItem = Array.isArray(empresa.SDTRetornoPertencesEmpresaItem)
+        ? empresa.SDTRetornoPertencesEmpresaItem[0]
         : empresa.SDTRetornoPertencesEmpresaItem;
-      
+
       logger.info(`${logPrefix} Inscrição Empresa: ${empresaItem.SRPInscricaoEmpresa || 'N/A'}`);
       logger.info(`${logPrefix} Endereço Empresa: ${empresaItem.SRPEnderecoEmpresa || 'N/A'}`);
       logger.info(`${logPrefix} Possui Débito Empresa: ${empresaItem.SRPPossuiDebitoEmpresa || 'N/A'}`);
       logger.info(`${logPrefix} Autônomo: ${empresaItem.SRPAutonomo || 'N/A'}`);
-      
+
       pertences.push({
         inscricao: empresaItem.SRPInscricaoEmpresa || '',
         nomeRazaoSocial: pertencesItem.SRPNomeContribuinte || '',
@@ -385,18 +389,18 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
         complemento: `Tipo: Empresa, Débito Suspenso: ${empresaItem.SRPDebitoSuspensoEmpresa || 'N/A'}`,
       });
     }
-    
+
     // Processar imóveis se existirem
     const imoveis = pertencesItem.SDTRetornoPertencesImovel;
     if (imoveis && imoveis.SDTRetornoPertencesImovelItem) {
       logger.info(`${logPrefix} =================== PROCESSANDO IMÓVEIS ===================`);
-      
-      const imoveisArray = Array.isArray(imoveis.SDTRetornoPertencesImovelItem) 
-        ? imoveis.SDTRetornoPertencesImovelItem 
+
+      const imoveisArray = Array.isArray(imoveis.SDTRetornoPertencesImovelItem)
+        ? imoveis.SDTRetornoPertencesImovelItem
         : [imoveis.SDTRetornoPertencesImovelItem];
-      
+
       logger.info(`${logPrefix} Total de imóveis encontrados: ${imoveisArray.length}`);
-      
+
       imoveisArray.forEach((imovel: any, index: number) => {
         logger.info(`${logPrefix} ----- IMÓVEL ${index + 1} -----`);
         logger.info(`${logPrefix} Inscrição: ${imovel.SRPInscricaoImovel || 'N/A'}`);
@@ -406,7 +410,7 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
         logger.info(`${logPrefix} Possui Débito: ${imovel.SRPPossuiDebitoImovel || 'N/A'}`);
         logger.info(`${logPrefix} Débito Suspenso: ${imovel.SRPDebitoSuspensoImovel || 'N/A'}`);
         logger.debug(`${logPrefix} Dados completos do imóvel:`, JSON.stringify(imovel, null, 2));
-        
+
         pertences.push({
           inscricao: imovel.SRPInscricaoImovel || '',
           nomeRazaoSocial: pertencesItem.SRPNomeContribuinte || '',
@@ -422,28 +426,13 @@ const parseResultData = (data: any, logPrefix: string = '[PARSE]'): Pertence[] =
       logger.info(`${logPrefix} =================== NENHUM IMÓVEL ENCONTRADO ===================`);
       logger.info(`${logPrefix} Estrutura de imóveis:`, JSON.stringify(imoveis, null, 2));
     }
-    
-    // Se não há imóveis, criar um registro com os dados do contribuinte
-    if (pertences.length === 0) {
-      logger.info(`${logPrefix} =================== CRIANDO REGISTRO BÁSICO DO CONTRIBUINTE ===================`);
-      pertences.push({
-        inscricao: pertencesItem.SRPCodigoContribuinte || '',
-        nomeRazaoSocial: pertencesItem.SRPNomeContribuinte || '',
-        tipoContribuinte: 'Pessoa Jurídica',
-        situacao: 'Ativo',
-        endereco: '',
-        bairro: '',
-        numero: '',
-        complemento: `CPF/CNPJ: ${pertencesItem.SRPCPFCNPJContribuinte || ''}`,
-      });
-    }
-    
+
     logger.info(`${logPrefix} =================== RESULTADO FINAL ===================`);
     logger.info(`${logPrefix} Total de pertences processados: ${pertences.length}`);
     logger.debug(`${logPrefix} Pertences finais:`, JSON.stringify(pertences, null, 2));
-    
+
     return pertences;
-    
+
   } catch (error) {
     logger.error(`${logPrefix} =================== ERRO NO PARSE DOS DADOS ===================`);
     logger.error(`${logPrefix} Erro:`, error);

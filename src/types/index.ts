@@ -13,6 +13,8 @@ export interface Pertence {
     bairro?: string;
     numero?: string;
     complemento?: string;
+    cpfCnpj?: string;
+    codigoContribuinte?: string;
 }
 
 export interface FormData {
