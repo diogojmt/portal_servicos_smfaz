@@ -5,6 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 3000,
+    host: true,
+    allowedHosts: [
+      '961b160b-34b3-433d-a5db-bbade269e4ee-00-gipi472sgmd4.riker.replit.dev'
+    ],
     open: true,
     proxy: {
       '/api': {
