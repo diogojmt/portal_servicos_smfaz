@@ -38,7 +38,8 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
 };
 
 export const config: AppConfig = {
-  apiUrl: getEnvVar('VITE_SOAP_URL'),
+  // Força o uso do proxy Vite para SOAP em todos os ambientes
+  apiUrl: '/api/apwsretornopertences',
   apiTimeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000')),
   enableLogs: getEnvVar('VITE_ENABLE_LOGS', 'false') === 'true',
   appTitle: getEnvVar('VITE_APP_TITLE', 'Portal de Serviços'),
