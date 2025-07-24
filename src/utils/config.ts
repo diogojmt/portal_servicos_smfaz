@@ -42,7 +42,7 @@ export const config: AppConfig = {
   apiUrl: '/api/apwsretornopertences',
   apiTimeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000')),
   enableLogs: getEnvVar('VITE_ENABLE_LOGS', 'false') === 'true',
-  appTitle: getEnvVar('VITE_APP_TITLE', 'Portal de Serviços'),
+  appTitle: getEnvVar('VITE_APP_TITLE', 'Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ'),
   appVersion: getEnvVar('VITE_APP_VERSION', '1.0.0'),
   municipality: getEnvVar('VITE_MUNICIPALITY', 'Arapiraca'),
   cacheTtl: parseInt(getEnvVar('VITE_CACHE_TTL', '300000')),
