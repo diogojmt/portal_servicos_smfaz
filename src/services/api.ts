@@ -12,7 +12,7 @@ export const consultarDebitos = async (
   }
 ): Promise<any> => {
   const SSEChave = '@C0sS0_@P1';
-  const apiUrl = 'http://localhost:4000/api/apapidebito';
+  const apiUrl = '/api/apapidebito';
   const payload = {
     SSEChave,
     SSETipoContribuinte: params.SSETipoContribuinte,
