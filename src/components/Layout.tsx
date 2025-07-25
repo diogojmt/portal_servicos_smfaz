@@ -73,8 +73,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           left: 16,
           zIndex: 10000,
           padding: 1,
-          backgroundColor: "primary.main",
-          color: "primary.contrastText",
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
           textDecoration: "none",
           borderRadius: 1,
           "&:focus": {
@@ -97,33 +97,42 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             theme.customColors?.border?.light || theme.palette.divider
           }`,
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          background:
+            "linear-gradient(135deg, #fff 0%, #fff 20%, #e0e0e0 100%)",
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
-          <Box>
-            <Typography
-              variant="h6"
-              component="h1"
-              sx={{
-                fontWeight: 600,
-                lineHeight: 1.2,
-                fontSize: { xs: "1rem", sm: "1.25rem" },
-              }}
-            >
-              {config.appTitle}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "inherit",
-                opacity: 0.7,
-                display: "block",
-                lineHeight: 1,
-                fontSize: "0.75rem",
-              }}
-            >
-              Prefeitura de {config.municipality}
-            </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <img
+              src="/images/logo-arapiraca.svg"
+              alt="Prefeitura de Arapiraca"
+              style={{ height: 48, width: "auto", marginRight: 12 }}
+            />
+            <Box>
+              <Typography
+                variant="h6"
+                component="h1"
+                sx={{
+                  fontWeight: 600,
+                  lineHeight: 1.2,
+                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                }}
+              >
+                {config.appTitle}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "inherit",
+                  opacity: 0.7,
+                  display: "block",
+                  lineHeight: 1,
+                  fontSize: "0.75rem",
+                }}
+              >
+                Prefeitura de {config.municipality}
+              </Typography>
+            </Box>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -167,28 +176,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Typography>
             </Box>
 
-            {/* Toggle de tema */}
-            <IconButton
-              onClick={toggleTheme}
-              color="inherit"
-              aria-label={`Alternar para tema ${
-                actualMode === "dark" ? "claro" : "escuro"
-              }`}
-              sx={{
-                ml: 1,
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-            >
-              {actualMode === "dark" ? (
-                <Brightness7Icon />
-              ) : (
-                <Brightness4Icon />
-              )}
-            </IconButton>
+            {/* Toggle de tema removido */}
           </Box>
         </Toolbar>
       </AppBar>
@@ -202,12 +190,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           flex: 1,
           py: 4,
           minHeight: "calc(100vh - 120px)", // Ajustado para compensar header e footer menor
-          background: `linear-gradient(135deg, ${
-            theme.palette.background.default
-          } 0%, ${
-            theme.customColors?.surface?.secondary ||
-            theme.palette.background.paper
-          } 100%)`,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          // Sombra removida
         }}
       >
         <Container maxWidth="lg">{children}</Container>

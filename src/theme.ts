@@ -1,95 +1,59 @@
 import { createTheme, responsiveFontSizes, alpha } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 
-// Design tokens aprimorados com tons de prata elegantes para o tema claro
+// Design tokens aprimorados para um tema claro elegante e premium
 const designTokens = {
   colors: {
     light: {
-      primary: '#8b5cf6', // Mantém a cor vibrante
-      primaryLight: '#a78bfa',
-      primaryDark: '#7c3aed',
-      secondary: '#374151', // Mais escuro para melhor contraste
+      primary: '#3a7bd5', // Azul royal elegante
+      primaryLight: '#6eb6ff',
+      primaryDark: '#004e92',
+      secondary: '#bfa76a', // Dourado suave
       background: {
-        default: '#f8fafc', // Base mais clara e elegante
-        paper: '#ffffff',
-        elevated: '#f1f5f9', // Tom prata claro
-        gradient: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 30%, #e2e8f0 70%, #cbd5e1 100%)', // Degradê prata elegante
+        default: '#f7fafd',
+        paper: '#f2f6fa',
+        gradient: 'linear-gradient(135deg, #f7fafd 0%, #e3e9f2 50%, #d1dbe9 100%)'
       },
       surface: {
-        primary: '#ffffff',
-        secondary: '#f8fafc', // Prata muito claro
-        tertiary: '#f1f5f9', // Prata claro
-        warm: '#fefefe', // Branco quente
+        primary: '#ffffffcc', // branco translúcido
+        secondary: '#f4f6fa',
+        tertiary: '#e3e9f2',
+        warm: '#f9fafb'
       },
       text: {
-        primary: '#0f172a', // Quase preto para máximo contraste
-        secondary: '#334155', // Cinza escuro elegante
-        tertiary: '#64748b', // Cinza médio
-        disabled: '#94a3b8', // Cinza claro
+        primary: '#1a2233',
+        secondary: '#4b5563',
+        tertiary: '#7b8794',
+        disabled: '#b0b8c1'
       },
       border: {
-        light: '#e2e8f0', // Prata muito claro
-        medium: '#cbd5e1', // Prata médio
-        strong: '#94a3b8', // Prata escuro
+        light: '#e3e9f2',
+        medium: '#cfd8e3',
+        strong: '#b0b8c1'
       },
       status: {
-        success: '#047857', // Verde mais escuro e elegante
-        successLight: '#6ee7b7', // Verde claro prata
-        successDark: '#065f46', // Verde muito escuro
-        warning: '#b45309', // Âmbar mais escuro
-        warningLight: '#fcd34d', // Âmbar claro
-        warningDark: '#92400e', // Âmbar escuro
-        error: '#b91c1c', // Vermelho mais escuro
-        errorLight: '#fca5a5', // Vermelho claro
-        errorDark: '#991b1b', // Vermelho muito escuro
-        info: '#1e40af', // Azul mais escuro
-        infoLight: '#93c5fd', // Azul claro
-        infoDark: '#1e3a8a', // Azul muito escuro
+        success: '#3ecf8e',
+        successLight: '#a8f0c6',
+        successDark: '#1e7f5c',
+        warning: '#ffd166',
+        warningLight: '#ffe9b3',
+        warningDark: '#bfa76a',
+        error: '#ff5e5e',
+        errorLight: '#ffb3b3',
+        errorDark: '#b22c2c',
+        info: '#3a7bd5',
+        infoLight: '#6eb6ff',
+        infoDark: '#004e92'
+      },
+      action: {
+        hover: 'rgba(58,123,213,0.08)',
+        selected: 'rgba(191,167,106,0.12)',
+        disabled: '#cfd8e3',
+        disabledBackground: '#f4f6fa',
+        focus: 'rgba(58,123,213,0.18)',
+        active: '#3a7bd5'
       }
     },
-    dark: {
-      primary: '#8b5cf6',
-      primaryLight: '#a78bfa',
-      primaryDark: '#7c3aed',
-      secondary: '#94a3b8',
-      background: {
-        default: '#0f172a',
-        paper: '#1e293b',
-        elevated: '#334155',
-        gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
-      },
-      surface: {
-        primary: '#1e293b',
-        secondary: '#334155',
-        tertiary: '#475569',
-        warm: '#1e293b',
-      },
-      text: {
-        primary: '#f8fafc',
-        secondary: '#e2e8f0',
-        tertiary: '#cbd5e1',
-        disabled: '#64748b',
-      },
-      border: {
-        light: '#334155',
-        medium: '#475569',
-        strong: '#64748b',
-      },
-      status: {
-        success: '#10b981',
-        successLight: '#34d399',
-        successDark: '#059669',
-        warning: '#f59e0b',
-        warningLight: '#fbbf24',
-        warningDark: '#d97706',
-        error: '#ef4444',
-        errorLight: '#f87171',
-        errorDark: '#dc2626',
-        info: '#3b82f6',
-        infoLight: '#60a5fa',
-        infoDark: '#2563eb',
-      }
-    }
   },
   layout: {
     maxWidth: {
@@ -98,68 +62,69 @@ const designTokens = {
       md: 960,
       lg: 1600,
       xl: 1700,
-      xxl: 1800,
+      xxl: 1800
     },
     containerPadding: {
-      xs: 16,
-      sm: 24,
-      md: 32,
-      lg: 40,
+      xs: 20,
+      sm: 32,
+      md: 48,
+      lg: 64
     },
     contentWidth: {
-      narrow: 600,   // Para formulários simples
-      medium: 800,   // Para conteúdo padrão
-      wide: 1000,    // Para tabelas e dashboards
-      full: 1200,    // Para páginas completas
-      extraWide: 1400, // Para relatórios e análises
+      narrow: 600,
+      medium: 800,
+      wide: 1100,
+      full: 1300,
+      extraWide: 1500
     },
     sectionSpacing: {
-      xs: 16,
-      sm: 24,
-      md: 32,
-      lg: 48,
-      xl: 64,
-    },
+      xs: 20,
+      sm: 32,
+      md: 48,
+      lg: 64,
+      xl: 80
+    }
   },
   spacing: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 20,
-    xl: 28,
-    xxl: 40,
+    xs: 6,
+    sm: 12,
+    md: 18,
+    lg: 28,
+    xl: 40,
+    xxl: 56
   },
   borderRadius: {
-    sm: 3,
-    md: 3,
-    lg: 3,
-    xl: 3,
+    sm: 2,
+    md: 4,
+    lg: 3, // Cards internos e dialogs quase retos
+    xl: 6
   },
   shadows: {
     light: {
-      sm: '0 1px 3px 0 rgb(0 0 0 / 0.12), 0 1px 2px 0 rgb(0 0 0 / 0.08)', // Sombras mais definidas
-      md: '0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.12)',
-      lg: '0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12)',
-      xl: '0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.12)',
-      gradient: '0 4px 20px -2px rgb(139 92 246 / 0.20)', // Sombra do primary mais intensa
+      sm: '0 2px 8px 0 rgb(58 123 213 / 0.06), 0 1.5px 3px 0 rgb(191 167 106 / 0.04)',
+      md: '0 6px 16px -2px rgb(58 123 213 / 0.10), 0 3px 8px -4px rgb(191 167 106 / 0.08)',
+      lg: '0 16px 32px -4px rgb(58 123 213 / 0.12), 0 8px 16px -8px rgb(191 167 106 / 0.10)',
+      xl: '0 32px 48px -8px rgb(58 123 213 / 0.14), 0 16px 24px -12px rgb(191 167 106 / 0.12)',
+      gradient: '0 8px 32px -4px rgb(58 123 213 / 0.18)'
     },
     dark: {
-      sm: '0 1px 2px 0 rgb(0 0 0 / 0.3)',
-      md: '0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4)',
-      lg: '0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4)',
-      xl: '0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4)',
-      gradient: '0 4px 20px -2px rgb(139 92 246 / 0.2)',
+      sm: '0 2px 8px 0 rgb(0 0 0 / 0.18)',
+      md: '0 6px 16px -2px rgb(0 0 0 / 0.22)',
+      lg: '0 16px 32px -4px rgb(0 0 0 / 0.26)',
+      xl: '0 32px 48px -8px rgb(0 0 0 / 0.30)',
+      gradient: '0 8px 32px -4px rgb(0 0 0 / 0.22)'
     }
   }
 };
+// ...existing code...
 
-export const createAppTheme = (prefersDarkMode: boolean): Theme => {
-  const tokens = prefersDarkMode ? designTokens.colors.dark : designTokens.colors.light;
-  const shadows = prefersDarkMode ? designTokens.shadows.dark : designTokens.shadows.light;
+export const createAppTheme = (): Theme => {
+  const tokens = designTokens.colors.light;
+  const shadows = designTokens.shadows.light;
 
   const baseTheme = createTheme({
     palette: {
-      mode: prefersDarkMode ? 'dark' : 'light',
+      mode: 'light',
       primary: {
         main: tokens.primary,
         light: tokens.primaryLight,
@@ -168,35 +133,44 @@ export const createAppTheme = (prefersDarkMode: boolean): Theme => {
       secondary: {
         main: tokens.secondary,
       },
-      background: {
-        default: tokens.background.default,
-        paper: tokens.surface.primary,
-      },
-      text: {
-        primary: tokens.text.primary,
-        secondary: tokens.text.secondary,
-      },
-      success: {
-        main: tokens.status.success,
-        light: tokens.status.successLight,
-        dark: tokens.status.successDark,
+      info: {
+        main: tokens.status.info,
+        light: tokens.status.infoLight,
+        dark: tokens.status.infoDark,
       },
       warning: {
         main: tokens.status.warning,
         light: tokens.status.warningLight,
         dark: tokens.status.warningDark,
       },
+      background: {
+        default: tokens.background.default,
+        paper: tokens.background.paper,
+      },
+      text: {
+        primary: tokens.text.primary,
+        secondary: tokens.text.secondary,
+        disabled: tokens.text.disabled,
+      },
+      divider: tokens.border.light,
+      success: {
+        main: tokens.status.success,
+        light: tokens.status.successLight,
+        dark: tokens.status.successDark,
+      },
       error: {
         main: tokens.status.error,
         light: tokens.status.errorLight,
         dark: tokens.status.errorDark,
       },
-      info: {
-        main: tokens.status.info,
-        light: tokens.status.infoLight,
-        dark: tokens.status.infoDark,
+      action: {
+        hover: tokens.action?.hover || '#e3f2fd',
+        selected: tokens.action?.selected || '#bbdefb',
+        disabled: tokens.action?.disabled || '#bdbdbd',
+        disabledBackground: tokens.action?.disabledBackground || '#f5f5f5',
+        focus: tokens.action?.focus || '#00b5e2',
+        active: tokens.action?.active || '#0076c0',
       },
-      divider: tokens.border.medium,
     },
     designTokens: designTokens,
     customColors: {
@@ -271,54 +245,61 @@ export const createAppTheme = (prefersDarkMode: boolean): Theme => {
       },
     },
     typography: {
-      fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: '"Inter", "Segoe UI", "Calibri", -apple-system, BlinkMacSystemFont, Roboto, sans-serif',
       h1: {
-        fontWeight: 700,
-        fontSize: '2.25rem',
-        lineHeight: 1.2,
-        letterSpacing: '-0.025em',
+        fontWeight: 800,
+        fontSize: '2.8rem',
+        lineHeight: 1.13,
+        letterSpacing: '-0.04em',
+        textShadow: '0 2px 8px rgba(58,123,213,0.08)'
       },
       h2: {
-        fontWeight: 600,
-        fontSize: '1.875rem',
-        lineHeight: 1.3,
-        letterSpacing: '-0.025em',
+        fontWeight: 700,
+        fontSize: '2.1rem',
+        lineHeight: 1.18,
+        letterSpacing: '-0.03em',
+        textShadow: '0 1.5px 6px rgba(58,123,213,0.06)'
       },
       h3: {
-        fontWeight: 600,
-        fontSize: '1.5rem',
-        lineHeight: 1.4,
-        letterSpacing: '-0.025em',
+        fontWeight: 700,
+        fontSize: '1.6rem',
+        lineHeight: 1.22,
+        letterSpacing: '-0.02em',
       },
       h4: {
         fontWeight: 600,
         fontSize: '1.25rem',
-        lineHeight: 1.4,
+        lineHeight: 1.3,
       },
       h5: {
         fontWeight: 600,
-        fontSize: '1.125rem',
-        lineHeight: 1.4,
+        fontSize: '1.1rem',
+        lineHeight: 1.3,
       },
       h6: {
         fontWeight: 600,
         fontSize: '1rem',
-        lineHeight: 1.5,
+        lineHeight: 1.4,
       },
       body1: {
-        fontSize: '0.875rem',
-        lineHeight: 1.6,
+        fontSize: '1rem',
+        lineHeight: 1.7,
         fontWeight: 400,
       },
       body2: {
-        fontSize: '0.8125rem',
-        lineHeight: 1.5,
+        fontSize: '0.92rem',
+        lineHeight: 1.6,
         fontWeight: 400,
       },
       caption: {
-        fontSize: '0.75rem',
-        lineHeight: 1.4,
+        fontSize: '0.8rem',
+        lineHeight: 1.5,
         fontWeight: 500,
+      },
+      button: {
+        fontWeight: 600,
+        fontSize: '0.95rem',
+        letterSpacing: '0.03em',
       },
     },
     shape: {
@@ -430,7 +411,6 @@ export const createAppTheme = (prefersDarkMode: boolean): Theme => {
       MuiButton: {
         styleOverrides: {
           root: {
-            textTransform: 'none',
             fontWeight: 500,
             borderRadius: designTokens.borderRadius.md,
             fontSize: '0.875rem',

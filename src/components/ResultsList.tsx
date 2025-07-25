@@ -336,40 +336,56 @@ const ResultsList: React.FC<ResultsListProps> = ({
         maxWidth="md"
         fullWidth
         PaperProps={{
-          sx: {
-            minHeight: 300,
+          sx: (theme: any) => ({
+            minHeight: 320,
             maxHeight: "80vh",
+            background: theme.designTokens.colors.light.background.gradient,
             bgcolor: "background.paper",
-            borderRadius: (theme: any) => theme.designTokens.borderRadius.lg,
-            boxShadow: (theme: any) => theme.designTokens.shadows.light.lg,
+            borderRadius: theme.designTokens.borderRadius.lg,
+            boxShadow: theme.designTokens.shadows.light.xl,
+            border: `1.5px solid ${theme.customColors.border.medium}`,
             display: "flex",
             flexDirection: "column",
+            overflow: "hidden",
+            transition: "box-shadow 0.2s, border 0.2s",
+          }),
+        }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: "rgba(30, 41, 59, 0.35)",
+            backdropFilter: "blur(3px)",
           },
         }}
       >
         {/* Cabeçalho fixo */}
         <Box
-          sx={{
+          sx={(theme: any) => ({
             position: "sticky",
             top: 0,
             zIndex: 2,
-            bgcolor: "background.paper",
+            bgcolor: theme.customColors.surface.primary,
+            background: theme.designTokens.colors.light.background.gradient,
             p: 3,
-            borderBottom: (theme: any) =>
-              `1px solid ${theme.customColors.border.light}`,
-          }}
+            borderBottom: `1.5px solid ${theme.customColors.border.medium}`,
+            boxShadow: theme.designTokens.shadows.light.sm,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+          })}
         >
           <Typography
             variant="h5"
             gutterBottom
-            sx={{
-              color: "primary.main",
-              fontWeight: 600,
+            sx={(theme: any) => ({
+              color: theme.palette.primary.main,
+              fontWeight: 700,
               mb: 0,
               display: "flex",
               alignItems: "center",
               gap: 1,
-            }}
+              textShadow: theme.typography.h2.textShadow,
+              letterSpacing: theme.typography.h2.letterSpacing,
+            })}
           >
             💰 Débitos do Vínculo
           </Typography>
@@ -377,15 +393,15 @@ const ResultsList: React.FC<ResultsListProps> = ({
 
         {/* Conteúdo scrollável */}
         <Box
-          sx={{
+          sx={(theme: any) => ({
             flex: 1,
             overflowY: "auto",
-            px: 3,
+            px: { xs: 1, sm: 3 },
             py: 2,
-            bgcolor: "background.paper",
-            color: "text.primary",
+            bgcolor: theme.customColors.surface.primary,
+            color: theme.palette.text.primary,
             minHeight: 250,
-          }}
+          })}
         >
           {loading && (
             <Box
@@ -518,7 +534,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               <Card
                 sx={{
                   mb: 3,
-                  bgcolor: (theme: any) => theme.customColors.warningAlpha10,
+                  bgcolor: (theme: any) => theme.customColors.warningAlpha50,
                   border: (theme: any) =>
                     `1px solid ${theme.customColors.warningAlpha30}`,
                 }}
@@ -736,21 +752,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
                         >
                           📋 Copiar Linha Digitável
                         </Button>
-                        <Button
-                          variant="text"
-                          size="small"
-                          color="info"
-                          onClick={() => {
-                            setSnackbar({
-                              open: true,
-                              message: `Nosso Número: ${debito.SSANossoNumero}`,
-                              severity: "info",
-                            });
-                          }}
-                          sx={{ fontSize: "0.75rem" }}
-                        >
-                          ℹ️ Ver Detalhes
-                        </Button>
+                        {/* Botão 'Ver Detalhes' removido conforme solicitado */}
                       </Box>
                     </CardContent>
                   </Card>
@@ -762,21 +764,22 @@ const ResultsList: React.FC<ResultsListProps> = ({
 
         {/* Rodapé fixo */}
         <Box
-          sx={{
+          sx={(theme: any) => ({
             position: "sticky",
             bottom: 0,
             zIndex: 2,
-            bgcolor: "background.paper",
+            bgcolor: theme.customColors.surface.primary,
+            background: theme.designTokens.colors.light.background.gradient,
             mt: 0,
             px: 3,
             py: 2,
-            borderTop: (theme: any) =>
-              `1px solid ${theme.customColors.border.light}`,
+            borderTop: `1.5px solid ${theme.customColors.border.medium}`,
+            boxShadow: theme.designTokens.shadows.light.sm,
             display: "flex",
             gap: 2,
             justifyContent: "flex-end",
             alignItems: "center",
-          }}
+          })}
         >
           <Button
             onClick={onClose}
@@ -800,7 +803,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
         border: `1px solid ${
           theme.customColors?.border?.light || theme.palette.divider
         }`,
-        borderRadius: 2,
+        borderRadius: theme.shape.borderRadius,
         transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
           boxShadow: theme.shadows[4],
@@ -832,9 +835,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               label={pertence.tipoContribuinte}
               size="small"
               sx={{
-                backgroundColor:
-                  theme.customColors?.primaryAlpha20 ||
-                  alpha(theme.palette.primary.main, 0.2),
+                backgroundColor: alpha(theme.palette.primary.main, 0.2),
                 color: theme.palette.primary.main,
                 fontWeight: 500,
               }}
@@ -1057,6 +1058,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1083,6 +1085,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1109,6 +1112,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1135,6 +1139,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1154,13 +1159,14 @@ const ResultsList: React.FC<ResultsListProps> = ({
             textAlign: "center",
             p: 2,
             border: `1px solid ${theme.customColors?.successAlpha30}`,
-            background: theme.customColors?.successAlpha10,
+            background: theme.customColors?.successAlpha50,
             minWidth: { xs: "150px", sm: "180px" },
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1180,13 +1186,14 @@ const ResultsList: React.FC<ResultsListProps> = ({
             textAlign: "center",
             p: 2,
             border: `1px solid ${theme.customColors?.errorAlpha30}`,
-            background: theme.customColors?.errorAlpha10,
+            background: theme.customColors?.errorAlpha50,
             minWidth: { xs: "150px", sm: "180px" },
             flex: {
               xs: "1 1 100%",
               sm: "1 1 calc(50% - 12px)",
               md: "1 1 calc(16% - 12px)",
             },
+            borderRadius: theme.shape.borderRadius,
             cursor: "pointer",
             transition: "box-shadow 0.2s",
             "&:hover": { boxShadow: theme.shadows[4] },
@@ -1208,7 +1215,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
           severity="warning"
           sx={{
             mb: 4,
-            backgroundColor: theme.customColors?.warningAlpha10,
+            backgroundColor: theme.customColors?.warningAlpha50,
             border: `1px solid ${theme.customColors?.warningAlpha30}`,
           }}
         >
@@ -1225,6 +1232,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
         sx={{
           border: `1px solid ${theme.customColors?.border?.light}`,
           background: theme.customColors?.surface?.warm,
+          borderRadius: theme.shape.borderRadius,
         }}
       >
         <CardContent sx={{ p: 3 }}>
@@ -1385,6 +1393,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
           mb: 4,
           border: `1px solid ${theme.customColors?.border?.light}`,
           background: theme.customColors?.surface?.warm,
+          borderRadius: theme.shape.borderRadius,
         }}
       >
         <CardContent sx={{ p: 4 }}>

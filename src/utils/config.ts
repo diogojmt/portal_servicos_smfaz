@@ -28,7 +28,7 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
     VITE_SOAP_URL: '/api/apwsretornopertences', // URL do proxy para desenvolvimento
     VITE_API_TIMEOUT: '30000',
     VITE_ENABLE_LOGS: 'true',
-    VITE_APP_TITLE: 'Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ',
+    VITE_APP_TITLE: 'Portal do Contribuinte - Secretaria Municipal da Fazenda - SMFAZ',
     VITE_APP_VERSION: '1.0.0',
     VITE_MUNICIPALITY: 'Arapiraca',
     VITE_CACHE_TTL: '300000',
@@ -42,7 +42,7 @@ export const config: AppConfig = {
   apiUrl: '/api/apwsretornopertences',
   apiTimeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000')),
   enableLogs: getEnvVar('VITE_ENABLE_LOGS', 'false') === 'true',
-  appTitle: getEnvVar('VITE_APP_TITLE', 'Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ'),
+  appTitle: getEnvVar('VITE_APP_TITLE', 'Portal do Contribuinte - Secretaria Municipal da Fazenda - SMFAZ'),
   appVersion: getEnvVar('VITE_APP_VERSION', '1.0.0'),
   municipality: getEnvVar('VITE_MUNICIPALITY', 'Arapiraca'),
   cacheTtl: parseInt(getEnvVar('VITE_CACHE_TTL', '300000')),

@@ -1,6 +1,6 @@
-# Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ
+# Portal do Contribuinte - Secretaria Municipal da Fazenda - SMFAZ
 
-Portal de Serviços para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
+Portal do Contribuinte para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -165,7 +165,7 @@ VITE_API_TIMEOUT=30000
 VITE_ENABLE_LOGS=true
 
 # Aplicação
-VITE_APP_TITLE=Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ
+VITE_APP_TITLE=Portal do Contribuinte - Secretaria Municipal da Fazenda - SMFAZ
 VITE_APP_VERSION=1.0.0
 VITE_MUNICIPALITY=Arapiraca
 

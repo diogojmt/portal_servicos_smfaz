@@ -1,7 +1,7 @@
 {
   "name": "portal-servicos-arapiraca",
   "version": "1.0.0",
-  "description": "Portal de Serviços para contribuintes de Arapiraca",
+  "description": "Portal do Contribuinte para contribuintes de Arapiraca",
   "main": "src/main.tsx",
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",

@@ -36,66 +36,58 @@ const App: React.FC = () => {
 
   return (
     <Layout>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          py: 1, // Reduzido para menor altura superior/inferior
+          boxShadow: theme.shadows[20],
+          background:
+            "linear-gradient(135deg, #b6c1d6ff 0%, #dde3ecff 50%, #b2bac4ff 100%)",
+          borderRadius: 3,
+        }}
+      >
         {/* Hero Section */}
         <Box
           sx={{
             textAlign: "center",
-            mb: 6,
-            py: 6,
-            background: `linear-gradient(135deg, ${
-              theme.customColors?.surface?.warm ||
-              theme.palette.background.paper
-            } 0%, ${
-              theme.customColors?.surface?.secondary ||
-              theme.palette.background.default
-            } 100%)`,
+            mb: 2, // Reduz margem inferior do bloco principal
+            py: 1.5, // Reduz padding vertical interno
+            background: "transparent",
             borderRadius: 3,
-            border: `1px solid ${
-              theme.customColors?.border?.light || theme.palette.divider
-            }`,
+            border: "none",
           }}
         >
-          <Typography
-            variant="h1"
-            component="h1"
-            gutterBottom
+          <Box
             sx={{
-              fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-              fontWeight: 700,
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              textAlign: "center",
-              mb: 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 1,
             }}
           >
-            Consulte seus Pertences
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{
-              maxWidth: 600,
-              mx: "auto",
-              fontSize: { xs: "1rem", sm: "1.125rem" },
-              lineHeight: 1.6,
-            }}
-          >
-            Digite seu CPF ou CNPJ para consultar seus vínculos
-          </Typography>
+            <img
+              src="/public/images/Logo_consulta_unificada3.png"
+              alt="Consulta Unificada"
+              style={{
+                maxWidth: "300px",
+                width: "100%",
+                height: "auto",
+                display: "block",
+                margin: "0", // reduzido para menor impacto vertical
+              }}
+            />
+          </Box>
+
           {/* Formulário de busca centralizado */}
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
-              mb: 4,
-              mt: 4,
+              my: 2,
               px: { xs: 2, sm: 0 },
             }}
           >
-            <Box sx={{ width: "100%", maxWidth: 500 }}>
+            <Box sx={{ width: "100%", maxWidth: 600 }}>
               <CPFForm onSearch={handleSearch} loading={loading} />
             </Box>
           </Box>
@@ -103,7 +95,7 @@ const App: React.FC = () => {
 
         {/* Mensagem de erro */}
         {error && (
-          <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
             <Alert
               severity="error"
               sx={{
