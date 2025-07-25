@@ -1,18 +1,16 @@
 //sistema
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Container,
-  Alert,
-  useTheme,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import React, { useState, Suspense, lazy } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
+import { useTheme } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import ReplayIcon from "@mui/icons-material/Replay";
 import Layout from "./components/Layout";
 import CPFForm from "./components/CPFForm";
-import ResultsList from "./components/ResultsList";
+const ResultsList = lazy(() => import("./components/ResultsList"));
 import { fetchPertences } from "./services/api";
 import { Pertence } from "./types";
 
@@ -79,10 +77,12 @@ const App: React.FC = () => {
             }}
           >
             <img
-              src="/images/Logo_consulta_unificada3.png"
+              src="/images/Logo_consulta_unificada3_1.webp"
               alt="Consulta Unificada"
+              width={495}
+              height={135}
               style={{
-                maxWidth: "220px",
+                maxWidth: "495px",
                 width: "100%",
                 height: "auto",
                 display: "block",
@@ -170,11 +170,13 @@ const App: React.FC = () => {
         )}
 
         {/* Lista de resultados */}
-        <ResultsList
-          pertences={pertences}
-          loading={loading}
-          cpfCnpj={searchedCpfCnpj}
-        />
+        <Suspense fallback={<div>Carregando resultados...</div>}>
+          <ResultsList
+            pertences={pertences}
+            loading={loading}
+            cpfCnpj={searchedCpfCnpj}
+          />
+        </Suspense>
       </Container>
     </Layout>
   );

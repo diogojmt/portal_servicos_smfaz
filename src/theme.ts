@@ -126,7 +126,7 @@ export const createAppTheme = (): Theme => {
     palette: {
       mode: 'light',
       primary: {
-        main: tokens.primary,
+        main: '#174274', // azul mais escuro para contraste
         light: tokens.primaryLight,
         dark: tokens.primaryDark,
       },
@@ -144,13 +144,13 @@ export const createAppTheme = (): Theme => {
         dark: tokens.status.warningDark,
       },
       background: {
-        default: tokens.background.default,
-        paper: tokens.background.paper,
+        default: '#f4f6fa', // fundo claro com contraste
+        paper: '#fff', // papel branco para contraste
       },
       text: {
-        primary: tokens.text.primary,
-        secondary: tokens.text.secondary,
-        disabled: tokens.text.disabled,
+        primary: '#1b1b1b', // preto ou quase preto para contraste
+        secondary: '#424242', // cinza escuro para rodapés/textos secundários
+        disabled: '#b0b8c1',
       },
       divider: tokens.border.light,
       success: {
@@ -169,7 +169,7 @@ export const createAppTheme = (): Theme => {
         disabled: tokens.action?.disabled || '#bdbdbd',
         disabledBackground: tokens.action?.disabledBackground || '#f5f5f5',
         focus: tokens.action?.focus || '#00b5e2',
-        active: tokens.action?.active || '#0076c0',
+        active: '#174274', // azul escuro para ação ativa
       },
     },
     designTokens: designTokens,
@@ -219,19 +219,19 @@ export const createAppTheme = (): Theme => {
       infoAlpha90: alpha(tokens.status.infoLight, 0.9),
       
       // Transparências de primary
-      primaryAlpha10: alpha(tokens.primary, 0.1),
-      primaryAlpha20: alpha(tokens.primary, 0.2),
-      primaryAlpha30: alpha(tokens.primary, 0.3),
-      primaryAlpha40: alpha(tokens.primary, 0.4),
-      primaryAlpha50: alpha(tokens.primary, 0.5),
-      primaryAlpha60: alpha(tokens.primary, 0.6),
-      primaryAlpha70: alpha(tokens.primary, 0.7),
-      primaryAlpha80: alpha(tokens.primary, 0.8),
-      primaryAlpha90: alpha(tokens.primary, 0.9),
+      primaryAlpha10: alpha('#174274', 0.1),
+      primaryAlpha20: alpha('#174274', 0.2),
+      primaryAlpha30: alpha('#174274', 0.3),
+      primaryAlpha40: alpha('#174274', 0.4),
+      primaryAlpha50: alpha('#174274', 0.5),
+      primaryAlpha60: alpha('#174274', 0.6),
+      primaryAlpha70: alpha('#174274', 0.7),
+      primaryAlpha80: alpha('#174274', 0.8),
+      primaryAlpha90: alpha('#174274', 0.9),
       
       // Cores de superfície customizadas
       surface: {
-        primary: tokens.surface.primary,
+        primary: '#fff',
         secondary: tokens.surface.secondary,
         tertiary: tokens.surface.tertiary,
         warm: tokens.surface.warm,

@@ -107,8 +107,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             xs: "linear-gradient(to bottom, #fff 0%, #fff 60%, #e0e0e0 100%)",
             sm: "linear-gradient(135deg, #fff 0%, #fff 60%, #e0e0e0 100%)",
           },
+          minHeight: 32,
           [theme.breakpoints.down("sm")]: {
-            minHeight: 48,
+            minHeight: 28,
             px: 1,
           },
         }}
@@ -116,8 +117,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Toolbar
           sx={{
             justifyContent: { xs: "center", sm: "space-between" },
-            py: { xs: 1, sm: 1 },
-            minHeight: { xs: 60, sm: 64 },
+            py: { xs: 0, sm: 0 },
+            minHeight: { xs: 28, sm: 32 },
             px: { xs: 0, sm: 2 },
           }}
         >
@@ -132,13 +133,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             }}
           >
             <img
-              src="/images/logo-arapiraca.svg"
+              src="/images/logo-arapiraca.webp"
               alt="Prefeitura de Arapiraca"
+              width={100}
+              height={50}
               style={{
-                height: 50,
+                height: 100,
                 width: "auto",
                 marginBottom: 2,
                 marginRight: 0,
+                // Reduz o espaço entre logo e texto no mobile
+                ...(theme.breakpoints.down("sm") && { marginBottom: 0 }),
               }}
             />
             <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
@@ -150,6 +155,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   lineHeight: 1.2,
                   fontSize: { xs: "1.08rem", sm: "1.25rem" },
                   letterSpacing: { xs: "-0.01em", sm: 0 },
+                  color: theme.palette.text.primary,
                   [theme.breakpoints.down("sm")]: {
                     fontSize: "1.08rem",
                   },
@@ -160,8 +166,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Typography
                 variant="caption"
                 sx={{
-                  color: "inherit",
-                  opacity: 0.7,
+                  color: theme.palette.text.secondary,
+                  opacity: 1,
                   display: "block",
                   lineHeight: 1,
                   fontSize: { xs: "0.75rem", sm: "0.8rem" },
@@ -231,8 +237,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <Typography
               variant="body2"
-              color="text.secondary"
-              sx={{ flex: { sm: 1 }, fontSize: { xs: "0.85rem", sm: "1rem" } }}
+              sx={{
+                flex: { sm: 1 },
+                fontSize: { xs: "0.85rem", sm: "1rem" },
+                color: theme.palette.text.secondary,
+                opacity: 1,
+              }}
             >
               &copy; {currentYear} Prefeitura Municipal de {config.municipality}
               . Todos os direitos reservados.
@@ -240,7 +250,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Typography
               variant="caption"
               sx={{
-                opacity: 0.6,
+                color: theme.palette.text.secondary,
+                opacity: 0.85,
                 whiteSpace: "nowrap",
                 fontSize: { xs: "0.7rem", sm: "0.85rem" },
               }}
