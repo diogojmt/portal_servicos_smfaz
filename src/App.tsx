@@ -1,7 +1,15 @@
 //sistema
 import React, { useState } from "react";
-import { Box, Typography, Container, Alert, useTheme, IconButton, Tooltip } from "@mui/material";
-import ReplayIcon from '@mui/icons-material/Replay';
+import {
+  Box,
+  Typography,
+  Container,
+  Alert,
+  useTheme,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import ReplayIcon from "@mui/icons-material/Replay";
 import Layout from "./components/Layout";
 import CPFForm from "./components/CPFForm";
 import ResultsList from "./components/ResultsList";
@@ -81,7 +89,7 @@ const App: React.FC = () => {
 
           {/* Botão de voltar para nova consulta */}
           {(pertences.length > 0 || error) && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
               <Tooltip title="Nova consulta">
                 <IconButton
                   color="primary"
@@ -100,7 +108,7 @@ const App: React.FC = () => {
           )}
 
           {/* Formulário de busca centralizado */}
-          {(!pertences.length && !loading) && (
+          {!pertences.length && !loading && (
             <Box
               sx={{
                 display: "flex",
