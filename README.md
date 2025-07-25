@@ -1,16 +1,16 @@
-# Portal do Contribuinte - Secretaria Municipal da Fazenda - SMFAZ
+# Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ
 
-Portal do Contribuinte para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
+Portal de Serviços para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
 
 ## 🚀 Tecnologias Utilizadas
 
-- **React 18** - Biblioteca para construção da interface
-- **TypeScript** - Tipagem estática para JavaScript
-- **Vite** - Build tool e servidor de desenvolvimento
-- **Axios** - Cliente HTTP para requisições
-- **Fast XML Parser** - Parser para respostas SOAP/XML
-- **Vitest** - Framework de testes unitários
-- **ESLint** - Linter para qualidade de código
+- **React 18** — Interface do usuário
+- **TypeScript** — Tipagem estática
+- **Vite** — Build tool e servidor de desenvolvimento
+- **Axios** — Cliente HTTP
+- **Fast XML Parser** — Parser para respostas SOAP/XML
+- **Vitest** — Testes unitários
+- **ESLint** — Linter
 
 ## 📋 Funcionalidades
 
@@ -68,38 +68,56 @@ Portal do Contribuinte para contribuintes de Arapiraca realizarem consultas e so
 ## 🏗️ Estrutura do Projeto
 
 ```
-portal-servicos-arapiraca/
-├── src/
-│   ├── components/
-│   │   ├── __tests__/           # Testes dos componentes
-│   │   ├── CPFForm.tsx          # Formulário de consulta
-│   │   ├── Layout.tsx           # Layout principal
-│   │   ├── ResultsList.tsx      # Lista de resultados
-│   │   └── Skeleton.tsx         # Componentes de loading
-│   ├── services/
-│   │   └── api.ts              # Serviços de API
-│   ├── styles/
-│   │   └── global.css          # Estilos globais
-│   ├── types/
-│   │   └── index.ts            # Definições de tipos
-│   ├── utils/
-│   │   ├── __tests__/          # Testes dos utilitários
-│   │   ├── cache.ts            # Sistema de cache
-│   │   ├── config.ts           # Configurações da app
-│   │   └── validation.ts       # Validações de CPF/CNPJ
-│   ├── test/
-│   │   └── setup.ts            # Configuração dos testes
-│   ├── App.tsx                 # Componente principal
-│   └── main.tsx                # Ponto de entrada
+portal_servicos_smfaz/
+├── index.html
+├── package.json
+├── README.md
+├── tsconfig.json
+├── vite.config.ts
 ├── public/
-│   └── index.html              # Template HTML
-├── .env.example                # Exemplo de variáveis de ambiente
-├── .eslintrc.json             # Configuração ESLint
-├── .gitignore                 # Arquivos ignorados pelo Git
-├── package.json                # Dependências e scripts
-├── tsconfig.json              # Configuração TypeScript
-├── vite.config.ts             # Configuração Vite + Vitest
-└── README.md                  # Documentação
+│   ├── index.html
+│   └── images/
+│       ├── Logo_consulta_unificada.png
+│       ├── Logo_consulta_unificada2.png
+│       ├── Logo_consulta_unificada3.png
+│       ├── logo-arapiraca.svg
+│       └── Marca.png
+├── proxy-backend/
+│   ├── index.js
+│   └── package.json
+├── src/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── test-validation.ts
+│   ├── theme.ts
+│   ├── ThemeProvider.tsx
+│   ├── vite-env.d.ts
+│   ├── components/
+│   │   ├── CPFForm.tsx
+│   │   ├── Layout.tsx
+│   │   ├── ResultsList.tsx
+│   │   ├── Skeleton.tsx
+│   │   └── __tests__/
+│   │       └── CPFForm.test.tsx
+│   ├── contexts/
+│   │   └── ThemeContext.tsx
+│   ├── hooks/
+│   │   └── useThemeMode.ts
+│   ├── services/
+│   │   └── api.ts
+│   ├── styles/
+│   │   └── global.css
+│   ├── test/
+│   │   └── setup.ts
+│   ├── types/
+│   │   └── index.ts
+│   └── utils/
+│       ├── cache.ts
+│       ├── config.ts
+│       ├── validation.ts
+│       └── __tests__/
+│           ├── cache.test.ts
+│           └── validation.test.ts
 ```
 
 ## 🛠️ Instalação e Execução
@@ -115,7 +133,7 @@ portal-servicos-arapiraca/
 
    ```bash
    git clone <url-do-repositorio>
-   cd portal-servicos-arapiraca
+   cd portal_servicos_smfaz
    ```
 
 2. **Instale as dependências**
@@ -127,7 +145,7 @@ portal-servicos-arapiraca/
 3. **Configure as variáveis de ambiente**
 
    ```bash
-   cp .env.example .env
+   copy .env.example .env
    # Edite o arquivo .env conforme necessário
    ```
 
@@ -142,15 +160,15 @@ portal-servicos-arapiraca/
 
 ## 📝 Scripts Disponíveis
 
-- `npm run dev` - Inicia o servidor de desenvolvimento
-- `npm run build` - Gera build de produção
-- `npm run preview` - Serve o build de produção
-- `npm run test` - Executa testes unitários
-- `npm run test:ui` - Interface visual para testes
-- `npm run test:coverage` - Relatório de cobertura de testes
-- `npm run lint` - Verifica qualidade do código
-- `npm run lint:fix` - Corrige problemas de lint automaticamente
-- `npm run type-check` - Verifica tipos TypeScript
+- `npm run dev` — Inicia o servidor de desenvolvimento
+- `npm run build` — Gera build de produção
+- `npm run preview` — Serve o build de produção
+- `npm run test` — Executa testes unitários (Vitest)
+- `npm run test:ui` — Interface visual para testes
+- `npm run test:coverage` — Relatório de cobertura de testes
+- `npm run lint` — Verifica qualidade do código
+- `npm run lint:fix` — Corrige problemas de lint automaticamente
+- `npm run type-check` — Verifica tipos TypeScript
 
 ## 🔧 Configuração
 
@@ -205,7 +223,7 @@ npx tsx src/test-validation.ts
 
 Ou teste manualmente:
 
-```javascript
+```typescript
 import { validateDocument, formatCpfCnpj } from "./utils/validation";
 
 // CPF válido
@@ -268,7 +286,7 @@ formatCpfCnpj("11222333000181"); // 11.222.333/0001-81
 
 ### Logs
 
-```javascript
+```typescript
 // Configurável via VITE_ENABLE_LOGS
 logger.debug("Debug information");
 logger.info("General information");
@@ -278,8 +296,9 @@ logger.error("Error occurred");
 
 ### Cache Management
 
-```javascript
+```typescript
 // Limpar cache manualmente
+import cache from "./utils/cache";
 cache.clear();
 
 // Verificar status

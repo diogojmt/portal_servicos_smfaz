@@ -1,6 +1,7 @@
 //sistema
 import React, { useState } from "react";
-import { Box, Typography, Container, Alert, useTheme } from "@mui/material";
+import { Box, Typography, Container, Alert, useTheme, IconButton, Tooltip } from "@mui/material";
+import ReplayIcon from '@mui/icons-material/Replay';
 import Layout from "./components/Layout";
 import CPFForm from "./components/CPFForm";
 import ResultsList from "./components/ResultsList";
@@ -78,19 +79,41 @@ const App: React.FC = () => {
             />
           </Box>
 
-          {/* Formulário de busca centralizado */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              my: 2,
-              px: { xs: 2, sm: 0 },
-            }}
-          >
-            <Box sx={{ width: "100%", maxWidth: 600 }}>
-              <CPFForm onSearch={handleSearch} loading={loading} />
+          {/* Botão de voltar para nova consulta */}
+          {(pertences.length > 0 || error) && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <Tooltip title="Nova consulta">
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    setPertences([]);
+                    setError(null);
+                    setSearchedCpfCnpj("");
+                  }}
+                  size="large"
+                  aria-label="Nova consulta"
+                >
+                  <ReplayIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
             </Box>
-          </Box>
+          )}
+
+          {/* Formulário de busca centralizado */}
+          {(!pertences.length && !loading) && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                my: 2,
+                px: { xs: 2, sm: 0 },
+              }}
+            >
+              <Box sx={{ width: "100%", maxWidth: 600 }}>
+                <CPFForm onSearch={handleSearch} loading={loading} />
+              </Box>
+            </Box>
+          )}
         </Box>
 
         {/* Mensagem de erro */}
