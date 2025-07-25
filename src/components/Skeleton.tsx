@@ -39,80 +39,88 @@ export const PertenceCardSkeleton: React.FC = () => {
     <Card
       elevation={0}
       sx={{
-        mb: 2,
+        mb: { xs: 1.5, sm: 2 },
         border: `1px solid ${
           theme.customColors?.border?.light || theme.palette.divider
         }`,
-        borderRadius: 2,
+        borderRadius: { xs: theme.designTokens?.borderRadius.md || 4, sm: 2 },
       }}
     >
-      <CardContent sx={{ p: 3 }}>
+      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
         {/* Header do card */}
         <Box
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: "flex-start",
-            mb: 2,
+            alignItems: { xs: "stretch", sm: "flex-start" },
+            mb: { xs: 1, sm: 2 },
+            gap: { xs: 1, sm: 0 },
           }}
         >
           <Box>
             <MuiSkeleton
               variant="rounded"
-              height={24}
-              width="60%"
-              sx={{ mb: 1 }}
+              height={20}
+              width={"60%"}
+              sx={{ mb: { xs: 0.5, sm: 1 } }}
             />
             <MuiSkeleton
               variant="rounded"
-              height={20}
-              width={80}
-              sx={{ borderRadius: 10 }}
+              height={16}
+              width={64}
+              sx={{ borderRadius: 8 }}
             />
           </Box>
           <MuiSkeleton
             variant="rounded"
-            height={24}
-            width={100}
-            sx={{ borderRadius: 12 }}
+            height={20}
+            width={80}
+            sx={{ borderRadius: 10 }}
           />
         </Box>
 
         {/* Detalhes */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: { xs: 2, sm: 3 } }}>
           <MuiSkeleton
             variant="rounded"
-            height={16}
+            height={14}
             width="40%"
-            sx={{ mb: 1 }}
+            sx={{ mb: { xs: 0.5, sm: 1 } }}
           />
           <MuiSkeleton
             variant="rounded"
-            height={16}
+            height={14}
             width="80%"
-            sx={{ mb: 2 }}
+            sx={{ mb: { xs: 1, sm: 2 } }}
           />
           <MuiSkeleton
             variant="rounded"
-            height={16}
+            height={14}
             width="30%"
-            sx={{ mb: 1 }}
+            sx={{ mb: { xs: 0.5, sm: 1 } }}
           />
-          <MuiSkeleton variant="rounded" height={16} width="65%" />
+          <MuiSkeleton variant="rounded" height={14} width="65%" />
         </Box>
 
         {/* Ações */}
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 0.5, sm: 1 },
+            flexDirection: { xs: "column", sm: "row" },
+          }}
+        >
           <MuiSkeleton
             variant="rounded"
-            height={32}
-            width={120}
-            sx={{ borderRadius: 1 }}
+            height={28}
+            width={100}
+            sx={{ borderRadius: 1, mb: { xs: 0.5, sm: 0 } }}
           />
           <MuiSkeleton
             variant="rounded"
-            height={32}
-            width={140}
+            height={28}
+            width={110}
             sx={{ borderRadius: 1 }}
           />
         </Box>
@@ -127,12 +135,12 @@ export const LoadingSkeleton: React.FC<{ count?: number }> = ({
   const theme = useTheme();
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ mt: { xs: 2, sm: 4 } }}>
       {/* Header skeleton */}
       <Card
         elevation={0}
         sx={{
-          mb: 4,
+          mb: { xs: 2, sm: 4 },
           border: `1px solid ${
             theme.customColors?.border?.light || theme.palette.divider
           }`,
@@ -140,20 +148,20 @@ export const LoadingSkeleton: React.FC<{ count?: number }> = ({
             theme.customColors?.surface?.warm || theme.palette.background.paper,
         }}
       >
-        <CardContent sx={{ p: 4 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
           <MuiSkeleton
             variant="rounded"
-            height={32}
+            height={24}
             width="60%"
-            sx={{ mb: 2 }}
+            sx={{ mb: { xs: 1, sm: 2 } }}
           />
           <MuiSkeleton
             variant="rounded"
-            height={20}
+            height={16}
             width="40%"
-            sx={{ mb: 1 }}
+            sx={{ mb: { xs: 0.5, sm: 1 } }}
           />
-          <MuiSkeleton variant="rounded" height={20} width="50%" />
+          <MuiSkeleton variant="rounded" height={16} width="50%" />
         </CardContent>
       </Card>
 

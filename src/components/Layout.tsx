@@ -61,6 +61,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         background:
           theme.customColors?.surface?.primary ||
           theme.palette.background.default,
+        [theme.breakpoints.down("sm")]: {
+          background: theme.palette.background.default,
+        },
       }}
     >
       {/* Skip Link para acessibilidade */}
@@ -72,11 +75,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           top: -100,
           left: 16,
           zIndex: 10000,
-          padding: 1,
+          padding: { xs: 0.5, sm: 1 },
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
           textDecoration: "none",
           borderRadius: 1,
+          fontSize: { xs: "0.85rem", sm: "1rem" },
           "&:focus": {
             top: 16,
           },
@@ -96,29 +100,62 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           borderBottom: `1px solid ${
             theme.customColors?.border?.light || theme.palette.divider
           }`,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-          background:
-            "linear-gradient(135deg, #fff 0%, #fff 20%, #e0e0e0 100%)",
+          boxShadow:
+            theme.designTokens?.shadows?.light?.sm ||
+            "0 2px 8px rgba(0, 0, 0, 0.1)",
+          background: {
+            xs: "linear-gradient(to bottom, #fff 0%, #fff 60%, #e0e0e0 100%)",
+            sm: "linear-gradient(135deg, #fff 0%, #fff 60%, #e0e0e0 100%)",
+          },
+          [theme.breakpoints.down("sm")]: {
+            minHeight: 48,
+            px: 1,
+          },
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Toolbar
+          sx={{
+            justifyContent: { xs: "center", sm: "space-between" },
+            py: { xs: 1, sm: 1 },
+            minHeight: { xs: 60, sm: 64 },
+            px: { xs: 0, sm: 2 },
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "center", sm: "center" },
+              justifyContent: { xs: "center", sm: "flex-start" },
+              gap: { xs: 0.5, sm: 2 },
+            }}
+          >
             <img
               src="/images/logo-arapiraca.svg"
               alt="Prefeitura de Arapiraca"
-              style={{ height: 48, width: "auto", marginRight: 12 }}
+              style={{
+                height: 50,
+                width: "auto",
+                marginBottom: 2,
+                marginRight: 0,
+              }}
             />
-            <Box>
+            <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
               <Typography
                 variant="h6"
                 component="h1"
                 sx={{
                   fontWeight: 600,
                   lineHeight: 1.2,
-                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                  fontSize: { xs: "1.08rem", sm: "1.25rem" },
+                  letterSpacing: { xs: "-0.01em", sm: 0 },
+                  [theme.breakpoints.down("sm")]: {
+                    fontSize: "1.08rem",
+                  },
                 }}
               >
-                {config.appTitle}
+                Portal do Contribuinte
               </Typography>
               <Typography
                 variant="caption"
@@ -127,56 +164,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   opacity: 0.7,
                   display: "block",
                   lineHeight: 1,
-                  fontSize: "0.75rem",
+                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 }}
               >
                 Prefeitura de {config.municipality}
               </Typography>
             </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {/* Navegação principal */}
-            <Box
-              component="nav"
-              sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}
-            >
-              <Typography
-                component="a"
-                href="#inicio"
-                sx={{
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Início
-              </Typography>
-              <Typography
-                component="a"
-                href="#servicos"
-                sx={{
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Serviços
-              </Typography>
-              <Typography
-                component="a"
-                href="#contato"
-                sx={{
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Contato
-              </Typography>
-            </Box>
-
-            {/* Toggle de tema removido */}
           </Box>
         </Toolbar>
       </AppBar>
@@ -188,13 +181,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         role="main"
         sx={{
           flex: 1,
-          py: 4,
-          minHeight: "calc(100vh - 120px)", // Ajustado para compensar header e footer menor
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          // Sombra removida
+          py: { xs: 2, sm: 4 },
+          minHeight: { xs: "calc(100vh - 100px)", sm: "calc(100vh - 120px)" },
+          background: {
+            xs: theme.palette.background.default,
+            sm: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          },
         }}
       >
-        <Container maxWidth="lg">{children}</Container>
+        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2 } }}>
+          {children}
+        </Container>
       </Box>
 
       {/* Footer sempre visível */}
@@ -210,23 +207,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           borderTop: `1px solid ${
             theme.customColors?.border?.light || theme.palette.divider
           }`,
-          py: 2, // Reduzido de 3 para 2
+          py: { xs: 1, sm: 2 },
           position: "sticky",
           bottom: 0,
           zIndex: 1100,
           backdropFilter: "blur(8px)",
-          boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+          boxShadow:
+            theme.designTokens?.shadows?.light?.sm ||
+            "0 -2px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2 } }}>
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
-              gap: 2,
-              // Em telas pequenas, centraliza os elementos verticalmente
+              gap: { xs: 1, sm: 2 },
               flexDirection: { xs: "column", sm: "row" },
               textAlign: { xs: "center", sm: "left" },
             }}
@@ -234,7 +232,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ flex: { sm: 1 } }}
+              sx={{ flex: { sm: 1 }, fontSize: { xs: "0.85rem", sm: "1rem" } }}
             >
               &copy; {currentYear} Prefeitura Municipal de {config.municipality}
               . Todos os direitos reservados.
@@ -243,7 +241,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               variant="caption"
               sx={{
                 opacity: 0.6,
-                whiteSpace: "nowrap", // Evita quebra de linha na versão
+                whiteSpace: "nowrap",
+                fontSize: { xs: "0.7rem", sm: "0.85rem" },
               }}
             >
               Versão {config.appVersion}

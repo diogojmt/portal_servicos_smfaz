@@ -1,4 +1,4 @@
-# Portal de Serviços - Secretaria Municipal da Fazenda - SMFAZ
+# Portal do Contribuinte
 
 Portal de Serviços para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
 

@@ -62,16 +62,17 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        minHeight: { xs: 320, sm: 380 },
-        mb: 4,
-        px: { xs: 2, sm: 0 },
+        minHeight: { xs: 260, sm: 380 },
+        mb: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 0 },
+        width: "100%",
       }}
     >
       <Card
         elevation={0}
         sx={{
           width: "100%",
-          maxWidth: 500,
+          maxWidth: { xs: 360, sm: 500 },
           background:
             theme.customColors?.surface?.warm || theme.palette.background.paper,
           borderRadius: theme.designTokens?.borderRadius.xl || 6,
@@ -85,18 +86,22 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
             borderColor:
               theme.customColors?.border?.medium || theme.palette.divider,
           },
+          [theme.breakpoints.down("sm")]: {
+            maxWidth: "100%",
+            borderRadius: theme.designTokens?.borderRadius.md || 4,
+          },
         }}
       >
-        <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-          <Box sx={{ mb: 2, textAlign: "center" }}>
+        <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
+          <Box sx={{ mb: { xs: 1, sm: 2 }, textAlign: "center" }}>
             <Typography
               variant="body1"
               sx={{
                 color: theme.palette.primary.main,
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
-                mb: 0.5,
-                fontSize: { xs: "1.08rem", sm: "1.18rem" },
+                mb: { xs: 0.2, sm: 0.5 },
+                fontSize: { xs: "1rem", sm: "1.18rem" },
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -114,8 +119,8 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
                 fontWeight: 500,
                 letterSpacing: "0.01em",
                 lineHeight: 1.7,
-                fontSize: { xs: "0.98rem", sm: "1.05rem" },
-                mb: 1.2,
+                fontSize: { xs: "0.93rem", sm: "1.05rem" },
+                mb: { xs: 0.8, sm: 1.2 },
               }}
               component="div"
             >
@@ -136,7 +141,7 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
                   color: theme.palette.text.secondary,
                   fontSize: "inherit",
                   lineHeight: 1.7,
-                  mb: 1,
+                  mb: { xs: 0.5, sm: 1 },
                 }}
               >
                 <li>✔ Todos os seus imóveis, empresas e vínculos</li>
@@ -153,9 +158,21 @@ const CPFForm: React.FC<CPFFormProps> = ({ onSearch, loading }) => {
           <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: { xs: 2, sm: 3 },
+            }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: { xs: 0.5, sm: 1 },
+                flexDirection: { xs: "column", sm: "row" },
+                width: "100%",
+              }}
+            >
               <TextField
                 id="cpfCnpj"
                 value={cpfCnpj}

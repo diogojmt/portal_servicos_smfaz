@@ -251,55 +251,85 @@ export const createAppTheme = (): Theme => {
         fontSize: '2.8rem',
         lineHeight: 1.13,
         letterSpacing: '-0.04em',
-        textShadow: '0 2px 8px rgba(58,123,213,0.08)'
+        textShadow: '0 2px 8px rgba(58,123,213,0.08)',
+        '@media (max-width:600px)': {
+          fontSize: '2rem',
+        },
       },
       h2: {
         fontWeight: 700,
         fontSize: '2.1rem',
         lineHeight: 1.18,
         letterSpacing: '-0.03em',
-        textShadow: '0 1.5px 6px rgba(58,123,213,0.06)'
+        textShadow: '0 1.5px 6px rgba(58,123,213,0.06)',
+        '@media (max-width:600px)': {
+          fontSize: '1.5rem',
+        },
       },
       h3: {
         fontWeight: 700,
         fontSize: '1.6rem',
         lineHeight: 1.22,
         letterSpacing: '-0.02em',
+        '@media (max-width:600px)': {
+          fontSize: '1.2rem',
+        },
       },
       h4: {
         fontWeight: 600,
         fontSize: '1.25rem',
         lineHeight: 1.3,
+        '@media (max-width:600px)': {
+          fontSize: '1rem',
+        },
       },
       h5: {
         fontWeight: 600,
         fontSize: '1.1rem',
         lineHeight: 1.3,
+        '@media (max-width:600px)': {
+          fontSize: '0.95rem',
+        },
       },
       h6: {
         fontWeight: 600,
         fontSize: '1rem',
         lineHeight: 1.4,
+        '@media (max-width:600px)': {
+          fontSize: '0.9rem',
+        },
       },
       body1: {
         fontSize: '1rem',
         lineHeight: 1.7,
         fontWeight: 400,
+        '@media (max-width:600px)': {
+          fontSize: '0.95rem',
+        },
       },
       body2: {
         fontSize: '0.92rem',
         lineHeight: 1.6,
         fontWeight: 400,
+        '@media (max-width:600px)': {
+          fontSize: '0.85rem',
+        },
       },
       caption: {
         fontSize: '0.8rem',
         lineHeight: 1.5,
         fontWeight: 500,
+        '@media (max-width:600px)': {
+          fontSize: '0.75rem',
+        },
       },
       button: {
         fontWeight: 600,
         fontSize: '0.95rem',
         letterSpacing: '0.03em',
+        '@media (max-width:600px)': {
+          fontSize: '0.85rem',
+        },
       },
     },
     shape: {
@@ -354,6 +384,11 @@ export const createAppTheme = (): Theme => {
             boxShadow: shadows.gradient,
             borderBottom: `1px solid ${tokens.border.light}`,
             backdropFilter: 'blur(12px)',
+            '@media (max-width:600px)': {
+              minHeight: 48,
+              paddingLeft: 8,
+              paddingRight: 8,
+            },
           },
         },
       },
@@ -363,6 +398,10 @@ export const createAppTheme = (): Theme => {
             background: tokens.background.gradient,
             borderRight: `1px solid ${tokens.border.light}`,
             boxShadow: shadows.md,
+            '@media (max-width:600px)': {
+              minWidth: '70vw',
+              maxWidth: '100vw',
+            },
           },
         },
       },
@@ -373,6 +412,9 @@ export const createAppTheme = (): Theme => {
             margin: `${designTokens.spacing.xs}px 0`,
             color: tokens.text.secondary,
             transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+            minHeight: 48,
+            padding: '8px 16px',
+            fontSize: '1rem',
             '&:hover': {
               backgroundColor: tokens.surface.secondary,
               color: tokens.text.primary,
@@ -390,6 +432,11 @@ export const createAppTheme = (): Theme => {
                 color: '#ffffff',
               },
             },
+            '@media (max-width:600px)': {
+              minHeight: 36,
+              padding: '6px 8px',
+              fontSize: '0.95rem',
+            },
           },
         },
       },
@@ -405,6 +452,12 @@ export const createAppTheme = (): Theme => {
               boxShadow: shadows.md, // Efeito hover mais elegante
               borderColor: tokens.border.medium,
             },
+            '@media (max-width:600px)': {
+              padding: 8,
+              margin: '8px 0',
+              maxWidth: '100%',
+              borderRadius: designTokens.borderRadius.md,
+            },
           },
         },
       },
@@ -415,6 +468,13 @@ export const createAppTheme = (): Theme => {
             borderRadius: designTokens.borderRadius.md,
             fontSize: '0.875rem',
             transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+            padding: '8px 20px',
+            minHeight: 40,
+            '@media (max-width:600px)': {
+              fontSize: '0.8rem',
+              padding: '6px 12px',
+              minHeight: 32,
+            },
           },
           contained: {
             boxShadow: shadows.sm,
@@ -443,6 +503,11 @@ export const createAppTheme = (): Theme => {
             backgroundColor: tokens.surface.tertiary,
             color: tokens.text.primary,
             border: `1px solid ${tokens.border.light}`,
+            '@media (max-width:600px)': {
+              fontSize: '0.7rem',
+              height: 20,
+              padding: '0 6px',
+            },
           },
           outlined: {
             backgroundColor: 'transparent',
@@ -455,6 +520,14 @@ export const createAppTheme = (): Theme => {
           root: {
             fontWeight: 600,
             boxShadow: shadows.sm, // Sombra sutil nos avatares
+            width: 40,
+            height: 40,
+            fontSize: '1rem',
+            '@media (max-width:600px)': {
+              width: 32,
+              height: 32,
+              fontSize: '0.85rem',
+            },
           },
         },
       },
@@ -463,6 +536,10 @@ export const createAppTheme = (): Theme => {
           root: {
             backgroundColor: tokens.surface.primary,
             backgroundImage: 'none', // Remove gradiente padrão do MUI
+            '@media (max-width:600px)': {
+              borderRadius: designTokens.borderRadius.md,
+              padding: 8,
+            },
           },
           elevation1: {
             boxShadow: shadows.sm,
@@ -490,6 +567,15 @@ export const createAppTheme = (): Theme => {
                 borderColor: tokens.primary,
                 borderWidth: '2px',
               },
+              '@media (max-width:600px)': {
+                padding: '6px 8px',
+                fontSize: '0.95rem',
+                minHeight: 36,
+              },
+            },
+            '@media (max-width:600px)': {
+              margin: '8px 0',
+              width: '100%',
             },
           },
         },
@@ -501,6 +587,11 @@ export const createAppTheme = (): Theme => {
             border: `1px solid ${tokens.border.light}`,
             boxShadow: shadows.lg,
             backdropFilter: 'blur(12px)',
+            minWidth: 220,
+            '@media (max-width:600px)': {
+              minWidth: 140,
+              padding: '4px 0',
+            },
           },
         },
       },
@@ -518,6 +609,11 @@ export const createAppTheme = (): Theme => {
                 backgroundColor: alpha(tokens.primary, 0.15),
               },
             },
+            '@media (max-width:600px)': {
+              fontSize: '0.95rem',
+              minHeight: 36,
+              padding: '6px 12px',
+            },
           },
         },
       },
@@ -525,6 +621,9 @@ export const createAppTheme = (): Theme => {
         styleOverrides: {
           root: {
             borderColor: tokens.border.light,
+            '@media (max-width:600px)': {
+              margin: '8px 0',
+            },
           },
         },
       },
@@ -538,6 +637,10 @@ export const createAppTheme = (): Theme => {
               color: tokens.text.primary,
               transform: 'scale(1.05)', // Efeito de escala sutil
             },
+            '@media (max-width:600px)': {
+              padding: 6,
+              fontSize: '1.1rem',
+            },
           },
         },
       },
@@ -549,6 +652,11 @@ export const createAppTheme = (): Theme => {
             border: `1px solid ${tokens.border.light}`,
             boxShadow: shadows.md,
             fontSize: '0.75rem',
+            '@media (max-width:600px)': {
+              fontSize: '0.7rem',
+              padding: 6,
+              borderRadius: designTokens.borderRadius.sm,
+            },
           },
         },
       },

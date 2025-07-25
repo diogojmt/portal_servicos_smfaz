@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { Pertence } from "../types";
 import { DOCUMENT_TYPES } from "../services/api";
 import { consultarDebitos, emitirDocumento } from "../services/api";
@@ -14,6 +15,9 @@ import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import IconButton from "@mui/material/IconButton";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -66,11 +70,33 @@ interface PertencesByType {
   outros: Pertence[];
 }
 
-const ResultsList: React.FC<ResultsListProps> = ({
+const ResultsList: React.FC<ResultsListProps & { pertences: Pertence[] }> = ({
   pertences,
   loading,
   cpfCnpj,
 }) => {
+  // Organizar pertences por tipo, incluindo Contribuinte Geral para a nova aba
+  const pertencesByType: PertencesByType & { geral: Pertence[] } =
+    pertences.reduce(
+      (acc, pertence) => {
+        if (
+          pertence.tipoContribuinte === "Empresa" ||
+          pertence.tipoContribuinte === "Autônomo"
+        ) {
+          acc.empresa.push(pertence);
+        } else if (pertence.tipoContribuinte === "Imóvel") {
+          acc.imoveis.push(pertence);
+        } else if (pertence.tipoContribuinte === "Contribuinte Geral") {
+          acc.geral.push(pertence);
+        } else {
+          acc.outros.push(pertence);
+        }
+        return acc;
+      },
+      { empresa: [], imoveis: [], outros: [], geral: [] } as PertencesByType & {
+        geral: Pertence[];
+      }
+    );
   const [activeTab, setActiveTab] = useState(0);
   const [filterTodos, setFilterTodos] = useState<
     "all" | "semDebito" | "comDebito"
@@ -95,6 +121,40 @@ const ResultsList: React.FC<ResultsListProps> = ({
 
   const theme = useTheme();
 
+  // ...existing code...
+
+  // ...existing code...
+
+  // Atualiza a exibição das setas das abas em mobile
+  useEffect(() => {
+    function updateTabScrollButtons() {
+      const el = document.getElementById("tabs-scrollable-container");
+      const leftBtn = document.getElementById("tabs-scroll-left-btn");
+      const rightBtn = document.getElementById("tabs-scroll-right-btn");
+      if (!el || !leftBtn || !rightBtn) return;
+      const scrollLeft = el.scrollLeft;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      leftBtn.style.display = scrollLeft > 5 ? "flex" : "none";
+      rightBtn.style.display = scrollLeft < maxScroll - 5 ? "flex" : "none";
+    }
+    setTimeout(updateTabScrollButtons, 200);
+    window.addEventListener("resize", updateTabScrollButtons);
+    const el = document.getElementById("tabs-scrollable-container");
+    if (el) {
+      el.addEventListener("scroll", updateTabScrollButtons);
+    }
+    return () => {
+      window.removeEventListener("resize", updateTabScrollButtons);
+      if (el) el.removeEventListener("scroll", updateTabScrollButtons);
+    };
+  }, [
+    activeTab,
+    pertencesByType?.empresa?.length,
+    pertencesByType?.imoveis?.length,
+    pertencesByType?.geral?.length,
+    pertences.length,
+  ]);
+
   if (loading) {
     // LoadingSkeleton não aceita prop 'count', apenas 'variant', 'width', 'height', etc.
     // Se quiser múltiplos esqueletos, renderize múltiplos componentes ou ajuste conforme necessário.
@@ -118,28 +178,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
     return doc;
   };
 
-  // Organizar pertences por tipo, incluindo Contribuinte Geral para a nova aba
-  const pertencesByType: PertencesByType & { geral: Pertence[] } =
-    pertences.reduce(
-      (acc, pertence) => {
-        if (
-          pertence.tipoContribuinte === "Empresa" ||
-          pertence.tipoContribuinte === "Autônomo"
-        ) {
-          acc.empresa.push(pertence);
-        } else if (pertence.tipoContribuinte === "Imóvel") {
-          acc.imoveis.push(pertence);
-        } else if (pertence.tipoContribuinte === "Contribuinte Geral") {
-          acc.geral.push(pertence);
-        } else {
-          acc.outros.push(pertence);
-        }
-        return acc;
-      },
-      { empresa: [], imoveis: [], outros: [], geral: [] } as PertencesByType & {
-        geral: Pertence[];
-      }
-    );
+  // ...existing code...
 
   // Encontrar o Contribuinte Geral (primeiro, se houver)
   const contribuinteGeral = pertencesByType.geral[0];
@@ -278,29 +317,36 @@ const ResultsList: React.FC<ResultsListProps> = ({
       setDebitoError(null);
       setOpenDebitoModal(true);
       try {
-        // Parâmetros mínimos obrigatórios
+        // Parâmetros obrigatórios conforme documentação
         let tipoContribuinte = "3";
         if (pertence.tipoContribuinte === "Imóvel") {
           tipoContribuinte = "2";
         } else if (pertence.tipoContribuinte === "Contribuinte Geral") {
           tipoContribuinte = "1";
         }
+        // Formatar inscrição para 15 dígitos (padrão exigido pela API)
+        const formatInscricao = (inscricao: string) => {
+          const clean = String(inscricao).replace(/\D/g, "");
+          return clean.padStart(15, "0");
+        };
         const params = {
           SSETipoContribuinte: tipoContribuinte,
-          SSEInscricao: pertence.inscricao,
+          SSEInscricao: formatInscricao(pertence.inscricao),
           SSEExercicioDebito: "", // ou ano atual, se necessário
           SSETipoConsumo: "1", // lista todos os débitos
           SSENossoNumero: "",
-          SSECPFCNPJ: "",
+          SSECPFCNPJ: pertence.cpfCnpj || "",
           SSEOperacao: "",
           SSEIdentificador: "",
         };
+        // Exemplo de payload enviado para a API de débitos
+        const payload = {
+          SSEChave: "@C0sS0_@P1",
+          ...params,
+        };
+        console.log("[API Débitos] Payload enviado:", payload);
         const data = await consultarDebitos(params);
-        console.log("Dados de débitos recebidos:", data);
-        console.log("Tipo dos dados:", typeof data);
-        console.log("Dados é null/undefined?", data == null);
         setDebitoData(data);
-        console.log("Estado após setDebitoData");
       } catch (err) {
         console.error("Erro ao consultar débitos:", err);
         setDebitoError(
@@ -308,7 +354,6 @@ const ResultsList: React.FC<ResultsListProps> = ({
         );
         setDebitoData(null);
       } finally {
-        console.log("Finalizando - setando loading para false");
         setDebitoLoading(false);
       }
     }
@@ -812,15 +857,21 @@ const ResultsList: React.FC<ResultsListProps> = ({
         },
       }}
     >
-      <CardContent sx={{ p: 3 }}>
+      <CardContent
+        sx={(theme) => ({
+          p: { xs: 2, sm: 3 },
+        })}
+      >
         {/* Header do card */}
         <Box
-          sx={{
+          sx={(theme) => ({
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: { xs: "stretch", sm: "flex-start" },
             mb: 2,
-          }}
+            gap: { xs: 2, sm: 0 },
+          })}
         >
           <Box>
             <Typography
@@ -838,6 +889,9 @@ const ResultsList: React.FC<ResultsListProps> = ({
                 backgroundColor: alpha(theme.palette.primary.main, 0.2),
                 color: theme.palette.primary.main,
                 fontWeight: 500,
+                fontSize: { xs: "0.8rem", sm: "0.95rem" },
+                px: { xs: 1, sm: 2 },
+                py: { xs: 0.5, sm: 0.5 },
               }}
             />
           </Box>
@@ -847,6 +901,9 @@ const ResultsList: React.FC<ResultsListProps> = ({
               ...getSituacaoColor(pertence.situacao),
               fontWeight: 600,
               border: "1px solid",
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+              px: { xs: 1, sm: 2 },
+              py: { xs: 0.5, sm: 0.5 },
             }}
           />
         </Box>
@@ -957,7 +1014,15 @@ const ResultsList: React.FC<ResultsListProps> = ({
           </Box>
         )}
         {/* Ações */}
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            flexWrap: "wrap",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: { xs: "stretch", sm: "center" },
+          }}
+        >
           {pertence.situacao === "Com Débito" && (
             <Button
               variant="outlined"
@@ -967,6 +1032,8 @@ const ResultsList: React.FC<ResultsListProps> = ({
               sx={{
                 textTransform: "none",
                 borderColor: theme.customColors?.border?.medium,
+                fontSize: { xs: "0.8rem", sm: "0.95rem" },
+                minWidth: { xs: "100%", sm: 120 },
                 "&:hover": {
                   backgroundColor: theme.customColors?.surface?.secondary,
                 },
@@ -990,6 +1057,8 @@ const ResultsList: React.FC<ResultsListProps> = ({
             sx={{
               textTransform: "none",
               borderColor: theme.customColors?.border?.medium,
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+              minWidth: { xs: "100%", sm: 120 },
               "&:hover": {
                 backgroundColor: theme.customColors?.surface?.secondary,
               },
@@ -1376,7 +1445,7 @@ const ResultsList: React.FC<ResultsListProps> = ({
   };
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ mt: { xs: 2, sm: 4 } }}>
       {/* Modal de Débitos sempre renderizado */}
       <DebitoModal
         open={openDebitoModal}
@@ -1427,8 +1496,72 @@ const ResultsList: React.FC<ResultsListProps> = ({
             sx={{
               mb: 3,
               border: `1px solid ${theme.customColors?.border?.light}`,
+              px: { xs: 0.5, sm: 2 },
+              py: { xs: 0.5, sm: 1 },
+              borderRadius: theme.shape.borderRadius,
+              overflowX: { xs: "auto", sm: "visible" },
+              boxShadow: { xs: "none", sm: theme.shadows[1] },
+              position: "relative",
             }}
           >
+            {/* Indicadores laterais em mobile */}
+            <Box
+              sx={{
+                display: { xs: "flex", sm: "none" },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+                zIndex: 2,
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <IconButton
+                aria-label="rolar abas para a esquerda"
+                size="small"
+                sx={{
+                  ml: 0.5,
+                  bgcolor: "background.paper",
+                  boxShadow: 1,
+                  opacity: 0.85,
+                  pointerEvents: "auto",
+                  display: "none", // será controlado via state
+                }}
+                onClick={() => {
+                  const el = document.getElementById(
+                    "tabs-scrollable-container"
+                  );
+                  if (el) el.scrollBy({ left: -120, behavior: "smooth" });
+                }}
+                id="tabs-scroll-left-btn"
+              >
+                <ChevronLeftIcon fontSize="inherit" />
+              </IconButton>
+              <IconButton
+                aria-label="rolar abas para a direita"
+                size="small"
+                sx={{
+                  mr: 0.5,
+                  bgcolor: "background.paper",
+                  boxShadow: 1,
+                  opacity: 0.85,
+                  pointerEvents: "auto",
+                  display: "none", // será controlado via state
+                }}
+                onClick={() => {
+                  const el = document.getElementById(
+                    "tabs-scrollable-container"
+                  );
+                  if (el) el.scrollBy({ left: 120, behavior: "smooth" });
+                }}
+                id="tabs-scroll-right-btn"
+              >
+                <ChevronRightIcon fontSize="inherit" />
+              </IconButton>
+            </Box>
             <Tabs
               value={activeTab}
               onChange={(_, newValue) => {
@@ -1439,12 +1572,45 @@ const ResultsList: React.FC<ResultsListProps> = ({
               scrollButtons="auto"
               sx={{
                 borderBottom: `1px solid ${theme.customColors?.border?.light}`,
+                minHeight: { xs: 38, sm: 48 },
+                "& .MuiTabs-flexContainer": {
+                  gap: { xs: 0.5, sm: 1 },
+                },
                 "& .MuiTab-root": {
                   textTransform: "none",
                   fontWeight: 500,
-                  fontSize: "0.875rem",
+                  fontSize: { xs: "1.05rem", sm: "0.95rem" },
+                  minHeight: { xs: 44, sm: 48 },
+                  minWidth: { xs: 130, sm: 120 },
+                  px: { xs: 2, sm: 2.5 },
+                  py: { xs: 1, sm: 1 },
+                  borderRadius: 2,
+                  transition: "background 0.2s",
+                  mb: { xs: 0, sm: 0 },
+                },
+                "& .Mui-selected": {
+                  background: theme.customColors?.primaryAlpha10,
+                  color: theme.palette.primary.main,
+                },
+                "& .MuiTabs-indicator": {
+                  height: 3,
+                  borderRadius: 2,
+                  background: theme.palette.primary.main,
+                },
+                overflowX: { xs: "auto", sm: "visible" },
+                scrollbarWidth: "thin",
+                "&::-webkit-scrollbar": {
+                  height: 6,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: theme.customColors?.border?.medium,
+                  borderRadius: 3,
                 },
               }}
+              TabScrollButtonProps={{
+                style: { display: "none" },
+              }}
+              id="tabs-scrollable-container"
             >
               <Tab icon={<DashboardIcon />} label="Resumo" />
               <Tab
@@ -1461,6 +1627,8 @@ const ResultsList: React.FC<ResultsListProps> = ({
               />
               <Tab icon={<ListIcon />} label={`Todos (${pertences.length})`} />
             </Tabs>
+            {/* Script para mostrar/esconder setas conforme overflow */}
+            {/* O script precisa rodar após renderização e ao trocar de aba. Usar useEffect para garantir atualização. */}
           </Card>
 
           {/* Conteúdo das abas */}

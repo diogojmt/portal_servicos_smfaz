@@ -27,7 +27,6 @@ const App: React.FC = () => {
     setLoading(true);
     setError(null);
     setSearchedCpfCnpj(cpfCnpj);
-
     try {
       const results = await fetchPertences(cpfCnpj);
       setPertences(results);
@@ -42,27 +41,32 @@ const App: React.FC = () => {
       setLoading(false);
     }
   };
-
   return (
     <Layout>
       <Container
         maxWidth="lg"
+        disableGutters
         sx={{
-          py: 1, // Reduzido para menor altura superior/inferior
-          boxShadow: theme.shadows[20],
-          background:
-            "linear-gradient(135deg, #b6c1d6ff 0%, #dde3ecff 50%, #b2bac4ff 100%)",
-          borderRadius: 3,
+          pt: { xs: 1, sm: 2 },
+          pb: { xs: 0.1, sm: 2 },
+          px: { xs: 0.5, sm: 2 },
+          boxShadow: { xs: theme.shadows[2], md: theme.shadows[20] },
+          background: {
+            xs: "linear-gradient(to bottom, #d7dee6ff 0%, #d0d7dfff 60%, #ced5ddff 100%)",
+            sm: "linear-gradient(90deg, #d7dee6ff 0%, #d0d7dfff 60%, #ced5ddff 100%)",
+          },
+          borderRadius: { xs: 0, sm: 3 },
+          minHeight: { xs: "80dvh", sm: "auto" },
         }}
       >
         {/* Hero Section */}
         <Box
           sx={{
             textAlign: "center",
-            mb: 2, // Reduz margem inferior do bloco principal
-            py: 1.5, // Reduz padding vertical interno
+            mb: { xs: 1, sm: 2 },
+            py: { xs: 1, sm: 1.5 },
             background: "transparent",
-            borderRadius: 3,
+            borderRadius: { xs: 0, sm: 3 },
             border: "none",
           }}
         >
@@ -71,25 +75,31 @@ const App: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              mb: 1,
+              mb: { xs: 0.5, sm: 1 },
             }}
           >
             <img
               src="/public/images/Logo_consulta_unificada3.png"
               alt="Consulta Unificada"
               style={{
-                maxWidth: "300px",
+                maxWidth: "220px",
                 width: "100%",
                 height: "auto",
                 display: "block",
-                margin: "0", // reduzido para menor impacto vertical
+                margin: 0,
               }}
             />
           </Box>
 
           {/* Botão de voltar para nova consulta */}
           {(pertences.length > 0 || error) && (
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mb: { xs: 1.5, sm: 2 },
+              }}
+            >
               <Tooltip title="Nova consulta">
                 <IconButton
                   color="primary"
@@ -98,8 +108,12 @@ const App: React.FC = () => {
                     setError(null);
                     setSearchedCpfCnpj("");
                   }}
-                  size="large"
+                  size={window.innerWidth <= 600 ? "medium" : "large"}
                   aria-label="Nova consulta"
+                  sx={{
+                    boxShadow: theme.shadows[1],
+                    borderRadius: theme.shape.borderRadius,
+                  }}
                 >
                   <ReplayIcon fontSize="inherit" />
                 </IconButton>
@@ -113,11 +127,11 @@ const App: React.FC = () => {
               sx={{
                 display: "flex",
                 justifyContent: "center",
-                my: 2,
-                px: { xs: 2, sm: 0 },
+                my: { xs: 1, sm: 2 },
+                px: { xs: 0.5, sm: 0 },
               }}
             >
-              <Box sx={{ width: "100%", maxWidth: 600 }}>
+              <Box sx={{ width: "100%", maxWidth: { xs: 340, sm: 600 } }}>
                 <CPFForm onSearch={handleSearch} loading={loading} />
               </Box>
             </Box>
@@ -126,11 +140,17 @@ const App: React.FC = () => {
 
         {/* Mensagem de erro */}
         {error && (
-          <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              mb: { xs: 2, sm: 3 },
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Alert
               severity="error"
               sx={{
-                maxWidth: 500,
+                maxWidth: { xs: 320, sm: 500 },
                 width: "100%",
                 backgroundColor:
                   theme.customColors?.errorAlpha10 || "rgba(244, 67, 54, 0.1)",
@@ -138,6 +158,7 @@ const App: React.FC = () => {
                   theme.customColors?.errorAlpha30 || "rgba(244, 67, 54, 0.3)"
                 }`,
                 borderRadius: 2,
+                fontSize: { xs: "0.92rem", sm: "1rem" },
                 "& .MuiAlert-icon": {
                   color: theme.palette.error.main,
                 },
