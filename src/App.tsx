@@ -21,6 +21,24 @@ const App: React.FC = () => {
   const [searchedCpfCnpj, setSearchedCpfCnpj] = useState<string>("");
   const theme = useTheme();
 
+  React.useEffect(() => {
+    const handleUnload = () => {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        if ("caches" in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((key) => caches.delete(key));
+          });
+        }
+      } catch (e) {
+        // Silenciar erros de limpeza
+      }
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, []);
+
   const handleSearch = async (cpfCnpj: string) => {
     setLoading(true);
     setError(null);
