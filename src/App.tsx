@@ -79,7 +79,7 @@ const App: React.FC = () => {
             }}
           >
             <img
-              src="/public/images/Logo_consulta_unificada3.png"
+              src="/images/Logo_consulta_unificada3.png"
               alt="Consulta Unificada"
               style={{
                 maxWidth: "220px",

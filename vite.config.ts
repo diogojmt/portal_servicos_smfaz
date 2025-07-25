@@ -1,9 +1,86 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: [
+        'favicon.svg',
+        'favicon.ico',
+        'robots.txt',
+        'apple-touch-icon.png',
+        'images/Logo_consulta_unificada.png',
+        'images/Logo_consulta_unificada2.png',
+        'images/logo-arapiraca.svg'
+      ],
+      manifest: {
+        name: 'Portal de Serviços SMFAZ',
+        short_name: 'Portal Serviços',
+        description: 'Portal de Serviços da Secretaria Municipal da Fazenda de Arapiraca',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: '#1976d2',
+        orientation: 'portrait',
+        icons: [
+          {
+            src: '/images/Logo_consulta_unificada.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/images/Logo_consulta_unificada2.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: '/images/logo-arapiraca.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 }
+            }
+          },
+          {
+            urlPattern: /\/api\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 10,
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }
+            }
+          }
+        ],
+        navigateFallback: '/offline.html'
+      },
+      devOptions: {
+        enabled: true
+      }
+    })
+  ],
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 3000,
     host: true,
@@ -23,7 +100,6 @@ export default defineConfig({
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
             console.log('Sending Documento Request to the Target:', req.method, req.url);
-            // Adicionar os headers necessários para a API de documentos
             if (req.headers['dadosapidocumento']) {
               proxyReq.setHeader('DadosAPIDocumento', req.headers['dadosapidocumento']);
             }
@@ -34,7 +110,7 @@ export default defineConfig({
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('Received Documento Response from the Target:', proxyRes.statusCode, req.url);
           });
-        },
+        }
       },
       '/api': {
         target: 'https://homologacao.abaco.com.br',
@@ -51,16 +127,16 @@ export default defineConfig({
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
-        },
-      },
-    },
+        }
+      }
+    }
   },
   build: {
-    outDir: 'dist',
+    outDir: 'dist'
   },
   resolve: {
     alias: {
-      '@': '/src',
-    },
-  },
+      '@': '/src'
+    }
+  }
 });

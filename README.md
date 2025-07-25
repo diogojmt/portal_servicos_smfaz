@@ -1,5 +1,20 @@
 # Portal do Contribuinte
 
+**Resumo:**
+
+O Portal do Contribuinte é uma plataforma online desenvolvida para facilitar o acesso dos cidadãos de Arapiraca a serviços públicos, consultas e solicitações utilizando CPF ou CNPJ. O sistema oferece uma interface moderna, responsiva e acessível, com validação automática de documentos, integração a APIs oficiais, cache inteligente e tratamento robusto de erros. Entre as principais funcionalidades já disponíveis estão consulta de débitos, solicitação de certidões, ficha financeira, download de documentos e listagem de vínculos. O projeto utiliza tecnologias modernas como React 18, TypeScript, Vite e Axios, além de seguir boas práticas de segurança, acessibilidade e performance.
+
+Principais diferenciais:
+
+- Interface elegante, responsiva e acessível (WCAG 2.1)
+- Validação automática de CPF/CNPJ (algoritmos oficiais)
+- Integração com API SOAP de pertences
+- Consulta de débitos, certidões, ficha financeira e download de documentos
+- Cache inteligente e logs configuráveis
+- Estrutura preparada para expansão (PWA, autenticação, histórico, etc.)
+
+---
+
 Portal de Serviços para contribuintes de Arapiraca realizarem consultas e solicitações online utilizando CPF/CNPJ.
 
 ## 🚀 Tecnologias Utilizadas
@@ -28,14 +43,14 @@ Portal de Serviços para contribuintes de Arapiraca realizarem consultas e solic
 - [x] Acessibilidade (WCAG 2.1)
 - [x] Logs configuráveis para debug
 - [x] Configuração via variáveis de ambiente
+- [x] Consulta de débitos
+- [x] Solicitação de certidões
+- [x] Ficha financeira
+- [x] Download de documentos
 
 ### 🔄 Em Desenvolvimento
 
-- [ ] Consulta de débitos
-- [ ] Solicitação de certidões
-- [ ] Ficha financeira
 - [ ] Histórico de consultas
-- [ ] Download de documentos
 - [ ] Autenticação de usuários
 - [ ] PWA (Progressive Web App)
 
