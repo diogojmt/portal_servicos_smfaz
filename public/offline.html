@@ -18,6 +18,7 @@
       <h1>Você está offline</h1>
       <p>Não foi possível conectar ao Portal de Serviços.<br/>Verifique sua conexão com a internet e tente novamente.</p>
       <button onclick="window.location.reload()" style="margin-top: 24px; padding: 10px 24px; font-size: 1rem; background: #1976d2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Tentar novamente</button>
+      <button onclick="window.location.href = window.location.pathname + '?reload=' + new Date().getTime();" style="margin-top: 24px; padding: 10px 24px; font-size: 1rem; background: #1976d2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Tentar novamente</button>
     </div>
   </body>
 </html>
