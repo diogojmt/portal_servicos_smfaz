@@ -178,8 +178,6 @@ const ResultsList: React.FC<ResultsListProps & { pertences: Pertence[] }> = ({
     return doc;
   };
 
-  // ...existing code...
-
   // Encontrar o Contribuinte Geral (primeiro, se houver)
   const contribuinteGeral = pertencesByType.geral[0];
 
@@ -216,33 +214,36 @@ const ResultsList: React.FC<ResultsListProps & { pertences: Pertence[] }> = ({
 
   // Filtra tipos de documento baseado no tipo de contribuinte
   const getAvailableDocumentTypes = (pertence: Pertence) => {
-    const isImovel = pertence.tipoContribuinte === "Imóvel";
-    const isEmpresa = pertence.tipoContribuinte === "Empresa";
-
-    if (isImovel) {
-      // Para imóveis, oculta BCM (4), Alvará de Funcionamento (5) e VISA (6)
+    const tipo = pertence.tipoContribuinte;
+    const idStr = (id: any) => String(id);
+    if (tipo === "Imóvel") {
       return allDocumentTypes.filter(
         (docType) =>
           ![
-            DOCUMENT_TYPES.BCM,
-            DOCUMENT_TYPES.ALVARA_FUNCIONAMENTO,
-            //DOCUMENT_TYPES.VISA,
-          ].includes(docType.id as any)
+            idStr(DOCUMENT_TYPES.BCM),
+            idStr(DOCUMENT_TYPES.ALVARA_FUNCIONAMENTO),
+            //idStr(DOCUMENT_TYPES.VISA),
+          ].includes(idStr(docType.id))
       );
     }
-
-    if (isEmpresa) {
-      // Para empresas, oculta CERTIDAO (2), BCI (3) e VISA (6)
+    if (tipo === "Empresa" || tipo === "Autônomo") {
       return allDocumentTypes.filter(
         (docType) =>
           ![
-            DOCUMENT_TYPES.CERTIDAO,
-            DOCUMENT_TYPES.BCI,
-            //DOCUMENT_TYPES.VISA,
-          ].includes(docType.id as any)
+            idStr(DOCUMENT_TYPES.CERTIDAO),
+            idStr(DOCUMENT_TYPES.BCI),
+            //idStr(DOCUMENT_TYPES.VISA),
+          ].includes(idStr(docType.id))
       );
     }
-
+    if (tipo === "Contribuinte Geral") {
+      return allDocumentTypes.filter((docType) =>
+        [
+          idStr(DOCUMENT_TYPES.DEMONSTRATIVO),
+          idStr(DOCUMENT_TYPES.CERTIDAO),
+        ].includes(idStr(docType.id))
+      );
+    }
     return allDocumentTypes;
   };
 
