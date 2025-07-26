@@ -15,7 +15,7 @@ export default defineConfig({
         'apple-touch-icon.png',
         'images/Logo_consulta_unificada.png',
         'images/Logo_consulta_unificada2.png',
-        'images/logo-arapiraca.svg'
+        'images/Marca.webp'
       ],
       manifest: {
         name: 'Portal de Serviços SMFAZ',
@@ -38,9 +38,9 @@ export default defineConfig({
             type: 'image/png'
           },
           {
-            src: '/images/logo-arapiraca.svg',
+            src: '/images/Marca.webp',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/webp',
             purpose: 'any maskable'
           }
         ]

@@ -9,19 +9,19 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/images/Logo_consulta_unificada.png",
+      "src": "/images/Logo_consulta_unificada2.webp",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/images/Logo_consulta_unificada2.png",
+      "src": "/images/Logo_consulta_unificada2.webp",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/images/logo-arapiraca.svg",
+      "src": "/images/Logo_consulta_unificada2.webp",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/webp",
       "purpose": "any maskable"
     }
   ]

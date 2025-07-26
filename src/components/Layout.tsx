@@ -117,8 +117,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Toolbar
           sx={{
             justifyContent: { xs: "center", sm: "space-between" },
+            alignItems: "center",
             py: { xs: 0, sm: 0 },
-            minHeight: { xs: 28, sm: 32 },
+            minHeight: { xs: 56, sm: 64 },
             px: { xs: 0, sm: 2 },
           }}
         >
@@ -127,23 +128,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               width: "100%",
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
-              alignItems: { xs: "center", sm: "center" },
+              alignItems: "center",
               justifyContent: { xs: "center", sm: "flex-start" },
               gap: { xs: 0.5, sm: 2 },
             }}
           >
-            <img
-              src="/images/logo-arapiraca.webp"
+            <Box
+              component="img"
+              src="/images/Marca.webp"
               alt="Prefeitura de Arapiraca"
-              width={100}
-              height={50}
-              style={{
-                height: 100,
-                width: "auto",
-                marginBottom: 2,
+              sx={{
+                width: { xs: "100%", sm: 180 },
+                maxWidth: { xs: "90vw", sm: 220 },
+                height: "auto",
+                marginBottom: 0,
                 marginRight: 0,
-                // Reduz o espaço entre logo e texto no mobile
-                ...(theme.breakpoints.down("sm") && { marginBottom: 0 }),
+                display: "block",
               }}
             />
             <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
@@ -264,5 +264,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </Box>
   );
 };
-
 export default Layout;

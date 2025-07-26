@@ -92,19 +92,21 @@ const App: React.FC = () => {
               justifyContent: "center",
               alignItems: "center",
               mb: { xs: 0.5, sm: 1 },
+              width: { xs: 220, sm: 495 },
+              maxWidth: "100%",
+              mx: "auto",
             }}
           >
-            <img
-              src="/images/Logo_consulta_unificada3_1.webp"
+            <Box
+              component="img"
+              src="/images/Logo_consulta_unificada3.webp"
               alt="Consulta Unificada"
-              width={495}
-              height={135}
-              style={{
-                maxWidth: "495px",
-                width: "100%",
+              sx={{
+                width: { xs: 180, sm: 495 },
                 height: "auto",
                 display: "block",
                 margin: 0,
+                maxWidth: "100%",
               }}
             />
           </Box>

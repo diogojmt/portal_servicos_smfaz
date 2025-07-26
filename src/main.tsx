@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import MainRoutes from "./routes";
 import { AppThemeProvider } from "./ThemeProvider";
 import "./pwa";
 
@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <AppThemeProvider>
-      <App />
+      <MainRoutes />
     </AppThemeProvider>
   </React.StrictMode>
 );
