@@ -98,13 +98,6 @@ define(["./workbox-f001acab"], function (workbox) {
     }),
     "GET"
   );
-  self.addEventListener("fetch", (event) => {
-    if (event.request.mode === "navigate") {
-      event.respondWith(
-        fetch(event.request).catch(() => caches.match("/offline.html"))
-      );
-    }
-  });
   workbox.registerRoute(
     /^https:\/\/fonts\.googleapis\.com\//,
     new workbox.CacheFirst({
