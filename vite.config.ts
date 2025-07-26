@@ -72,7 +72,8 @@ export default defineConfig({
               networkTimeoutSeconds: 10,
               expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }
             }
-          }
+          },
+          // ...existing code...
         ],
         navigateFallback: '/offline.html'
       },
